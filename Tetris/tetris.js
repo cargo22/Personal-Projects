@@ -173,40 +173,38 @@ document.addEventListener('DOMContentLoaded', () => {
   // ------------------------------------------------------------------------------------------------
 
   function resetGame() {
-    clearInterval(timerID)
-    timerID = null
-    isPaused = false
-    hidePauseScreen()
-    score = 0
-    scoreDisplay.innerHTML = score
-
     // removing all blocks from the grid
-    squares.forEach(square => {
+    squares.slice(0,200).forEach(square => {
       square.classList.remove('taken')
       square.classList.remove('block')
       square.classList.remove('ghost')
       square.style.backgroundColor = ''
     });
 
-    // resetting all values
-    currentPosition = 4
-    currentRotation = 0
-    ghostPosition = 4
-    ghostRotation = 0
-    random = Math.floor(Math.random() * blocks.length)
-    current = blocks[random][currentRotation]
-    ghostPiece = current
-    draw()
-    drawGhostPiece()
-    nextRandom = Math.floor(Math.random() * blocks.length)
-    displayShape()
+    if (timerID) {
+      clearInterval(timerID)
+      timerID = null
+      isPaused = false
+      hidePauseScreen()
+      score = 0
+      scoreDisplay.innerHTML = score
+    } else {
+      // resetting all values
+      currentPosition = 4
+      currentRotation = 0
+      ghostPosition = 4
+      ghostRotation = 0
+      random = Math.floor(Math.random() * blocks.length)
+      current = blocks[random][currentRotation]
+      ghostPiece = current
+      draw()
+      drawGhostPiece()
+      nextRandom = Math.floor(Math.random() * blocks.length)
+      displayShape()
 
-    document.removeEventListener('keyup', control)
-
-    document.addEventListener('keyup', control);
-
-    // start game again
-    timerID = setInterval(moveDown, 1000);
+      // start game again
+      timerID = setInterval(moveDown, 1000);
+    }
 
   }
 
