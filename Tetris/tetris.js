@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function resetGame() {
     // removing all blocks from the grid
-    squares.slice(0,200).forEach(square => {
+    squares.slice(0, 200).forEach(square => {
       square.classList.remove('taken')
       square.classList.remove('block')
       square.classList.remove('ghost')
@@ -455,6 +455,8 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   }
 
+  const audio = document.getElementById('backgroundMusic')
+  let isMusicPlaying = false
 
   // making start button work
   startButton.addEventListener('click', () => {
@@ -462,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
       clearInterval(timerID)
       timerID = null
       startButton.disabled = false
-
+      audio.pause()
     } else {
       draw()
       drawGhostPiece()
@@ -470,6 +472,15 @@ document.addEventListener('DOMContentLoaded', () => {
       nextRandom = Math.floor(Math.random() * blocks.length)
       displayShape()
       startButton.disabled = true
+      isPaused = false;
+
+      // toggle the music state and play/pause the audio accordingly
+      if (isMusicPlaying) {
+        audio.pause()
+      } else {
+        audio.play()
+      }
+      isMusicPlaying = !isMusicPlaying
     }
 
     startButton.disabled = false
@@ -502,5 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
       clearInterval(timerID)
     }
   }
+
+
 
 })
