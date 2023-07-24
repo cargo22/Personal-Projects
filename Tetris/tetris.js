@@ -169,6 +169,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  //programming a reset button
+  // ------------------------------------------------------------------------------------------------
+
+  function resetGame() {
+    clearInterval(timerID)
+    timerID = null
+    isPaused = false
+    hidePauseScreen()
+    score = 0
+    scoreDisplay.innerHTML = score
+
+    // removing all blocks from the grid
+    squares.forEach(square => {
+      square.classList.remove('taken')
+      square.classList.remove('block')
+      square.classList.remove('ghost')
+      square.style.backgroundColor = ''
+    });
+
+    // resetting all values
+    currentPosition = 4
+    currentRotation = 0
+    ghostPosition = 4
+    ghostRotation = 0
+    random = Math.floor(Math.random() * blocks.length)
+    current = blocks[random][currentRotation]
+    ghostPiece = current
+    draw()
+    drawGhostPiece()
+    nextRandom = Math.floor(Math.random() * blocks.length)
+    displayShape()
+
+    document.removeEventListener('keyup', control)
+
+    document.addEventListener('keyup', control);
+
+    // start game again
+    timerID = setInterval(moveDown, 1000);
+
+  }
+
+  const resetButton = document.getElementById('restartButton')
+  resetButton.addEventListener('click', resetGame)
+
   // movement
   // ------------------------------------------------------------------------------------------------
   function moveDown() {
@@ -208,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    
+
     while (ghostPiece.some(index => squares[ghostPosition + index].classList.contains('taken'))) {
       ghostPosition += width
     }
@@ -301,11 +345,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // checking to see if the rotation can be made within the grid's width. if not, rotate in a way where the block
   // does not wrap around the grid
   function checkRotatedPosition(P) {
-    P = P || currentPosition       
-    if ((P + 1) % width < 4) {             
-      if (isAtRight()) {           
-        currentPosition += 1    
-        checkRotatedPosition(P) 
+    P = P || currentPosition
+    if ((P + 1) % width < 4) {
+      if (isAtRight()) {
+        currentPosition += 1
+        checkRotatedPosition(P)
       }
     }
     else if (P % width > 5) {
@@ -326,11 +370,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function checkRotatedPositionGhost(P) {
-    P = P || ghostPosition       
-    if ((P + 1) % width < 4) {         
-      if (isAtRightGhost()) {           
-        ghostPosition += 1    
-        checkRotatedPosition(P) 
+    P = P || ghostPosition
+    if ((P + 1) % width < 4) {
+      if (isAtRightGhost()) {
+        ghostPosition += 1
+        checkRotatedPosition(P)
       }
     }
     else if (P % width > 5) {
