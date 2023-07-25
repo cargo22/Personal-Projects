@@ -464,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
       clearInterval(timerID)
       timerID = null
       startButton.disabled = false
-      audio.pause()
+      audio.play()
     } else {
       draw()
       drawGhostPiece()
@@ -472,15 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
       nextRandom = Math.floor(Math.random() * blocks.length)
       displayShape()
       startButton.disabled = true
-      isPaused = false;
-
-      // toggle the music state and play/pause the audio accordingly
-      if (isMusicPlaying) {
-        audio.pause()
-      } else {
-        audio.play()
-      }
-      isMusicPlaying = !isMusicPlaying
+      audio.play()
     }
 
     startButton.disabled = false
