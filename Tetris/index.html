@@ -12,12 +12,11 @@
 
 <body>
 
-    <button id="startButton">Start/Pause</button>
     <img src="https://assets.stickpng.com/images/628a738ebc2ec7ad957f4072.png" class="image">
 
     <audio id="backgroundMusic" loop>
         <source src="https://open.spotify.com/track/1dwTG4PVhiWzeu0fUfMMMb?si=9a2950167c21475f" type="audio/mpeg">
-      </audio>
+    </audio>
 
     <div class="container">
         <div class="grid">
@@ -234,11 +233,6 @@
             <div class="taken"></div>
         </div>
 
-        <div id="pauseScreen" class="pause-screen">
-            <h1>Game Paused</h1>
-            <button id="restartButton">Restart</button>
-            <button id="resumeButton">Resume</button>
-        </div>
 
         <div class="mini-grid">
             <div></div>
@@ -257,7 +251,16 @@
             <div></div>
             <div></div>
             <div></div>
+
+            <button id="startButton">Start</button>
         </div>
+
+        <div id="pauseScreen" class="pause-screen">
+            <h1>Game Paused</h1>
+            <button id="restartButton">Restart</button>
+            <button id="resumeButton">Resume</button>
+        </div>
+
     </div>
 
 </body>

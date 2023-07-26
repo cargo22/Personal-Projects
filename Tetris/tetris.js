@@ -214,21 +214,13 @@ document.addEventListener('DOMContentLoaded', () => {
   resetButton.addEventListener('click', resetGame)
   resumeButton.addEventListener('click', () => {
     hidePauseScreen()
-    if (timerID) {
-      clearInterval(timerID)
-      timerID = null
-      startButton.disabled = false
-      audio.play()
-      showPauseScreen()
-    } else {
-      draw()
-      drawGhostPiece()
-      timerID = setInterval(moveDown, 1000)
-      nextRandom = Math.floor(Math.random() * blocks.length)
-      displayShape()
-      startButton.disabled = true
-      audio.play()
-    }
+    draw()
+    drawGhostPiece()
+    timerID = setInterval(moveDown, 1000)
+    nextRandom = Math.floor(Math.random() * blocks.length)
+    displayShape()
+    startButton.disabled = true
+    audio.play()
   })
 
   // movement
@@ -494,6 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
       displayShape()
       startButton.disabled = true
       audio.play()
+      startButton.innerText = 'Pause'
     }
 
     startButton.disabled = false
