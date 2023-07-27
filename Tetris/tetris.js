@@ -157,12 +157,14 @@ document.addEventListener('DOMContentLoaded', () => {
         timerID = null
         isPaused = true
         showPauseScreen()
+        audio.pause()
         escapePressed = true
       } else {
         if (isPaused) {
           timerID = setInterval(moveDown, 1000)
           isPaused = false
           hidePauseScreen()
+          audio.play()
         }
         escapePressed = false
       }
@@ -180,6 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
       square.classList.remove('ghost')
       square.style.backgroundColor = ''
     });
+
+    startButton.disabled = false
+    audio.play()
 
     if (timerID) {
       clearInterval(timerID)
@@ -219,8 +224,8 @@ document.addEventListener('DOMContentLoaded', () => {
     timerID = setInterval(moveDown, 1000)
     nextRandom = Math.floor(Math.random() * blocks.length)
     displayShape()
-    startButton.disabled = true
     audio.play()
+    startButton.disabled = false
   })
 
   // movement
@@ -476,8 +481,9 @@ document.addEventListener('DOMContentLoaded', () => {
       clearInterval(timerID)
       timerID = null
       startButton.disabled = false
-      audio.play()
+      audio.pause()
       showPauseScreen()
+      resumePressed = false
     } else {
       draw()
       drawGhostPiece()

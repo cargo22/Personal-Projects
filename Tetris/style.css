@@ -35,10 +35,9 @@ body {
 }
 
 .mini-grid {
-    position: absolute;
-    top: 29%;
-    left: 60%;
-    transform: translate(-29%, -60%);
+    position: relative;
+    left: 120%;
+    top: -108%;
     margin-top: 40px;
     margin-left: 50px;
     width: 80px;
