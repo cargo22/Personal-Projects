@@ -184,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     startButton.disabled = false
+    audio.currentTime = 0
     audio.play()
 
     if (timerID) {
@@ -191,7 +192,6 @@ document.addEventListener('DOMContentLoaded', () => {
       timerID = null
       isPaused = false
       hidePauseScreen()
-      score = 0
       scoreDisplay.innerHTML = score
     } else {
       // resetting all values
@@ -202,6 +202,8 @@ document.addEventListener('DOMContentLoaded', () => {
       random = Math.floor(Math.random() * blocks.length)
       current = blocks[random][currentRotation]
       ghostPiece = current
+      score = 0
+      scoreDisplay.innerHTML = score
       draw()
       drawGhostPiece()
       nextRandom = Math.floor(Math.random() * blocks.length)
@@ -230,22 +232,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // movement
   // ------------------------------------------------------------------------------------------------
+  let isLocked = false
+  const lockDelay = 1000
+
   function moveDown() {
-    undraw()
-    currentPosition += width
-    draw()
-    freeze()
+    undraw();
+    currentPosition += width;
+
+    // Check if the block has reached the last layer
+    if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
+      // Block has reached the last layer
+      if (!isLocked) {
+        // If not locked, initiate the lock delay
+        isLocked = true;
+        setTimeout(() => {
+          isLocked = false;
+        }, lockDelay);
+      } else {
+        // If locked, proceed with usual behavior (lock the block)
+        freeze();
+      }
+
+      draw()
+    }
   }
 
   function moveLeft() {
     undraw()
 
-    const isAtLeftEdge = current.some(index => (currentPosition + index) % width == 0)
-
-    if (!isAtLeftEdge) currentPosition -= 1
-
-    if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
-      currentPosition += 1
+    if (!isLocked) {
+      const isAtLeftEdge = current.some(index => (currentPosition + index) % width === 0);
+      if (!isAtLeftEdge) {
+        currentPosition -= 1;
+      }
+      if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
+        currentPosition += 1;
+      }
     }
 
     draw()
@@ -280,13 +302,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const isAtRightEdge = current.some(index => (currentPosition + index) % width == width - 1)
 
-    if (!isAtRightEdge) {
-      currentPosition += 1
+    if (!isLocked) {
+      const isAtRightEdge = current.some(index => (currentPosition + index) % width === width - 1);
+      if (!isAtRightEdge) {
+        currentPosition += 1;
+      }
+      if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
+        currentPosition -= 1;
+      }
     }
 
-    if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
-      currentPosition -= 1
-    }
 
     draw()
   }
