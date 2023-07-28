@@ -232,43 +232,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // movement
   // ------------------------------------------------------------------------------------------------
-  let isLocked = false
+  let isDelayed = false
   const lockDelay = 1000
 
   function moveDown() {
     undraw();
     currentPosition += width;
-
-    // Check if the block has reached the last layer
-    if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
-      // Block has reached the last layer
-      if (!isLocked) {
-        // If not locked, initiate the lock delay
-        isLocked = true;
-        setTimeout(() => {
-          isLocked = false;
-        }, lockDelay);
-      } else {
-        // If locked, proceed with usual behavior (lock the block)
-        freeze();
-      }
-
-      draw()
-    }
+    draw()
+    freeze()
   }
+
 
   function moveLeft() {
     undraw()
 
-    if (!isLocked) {
-      const isAtLeftEdge = current.some(index => (currentPosition + index) % width === 0);
-      if (!isAtLeftEdge) {
-        currentPosition -= 1;
-      }
-      if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
-        currentPosition += 1;
-      }
+
+    const isAtLeftEdge = current.some(index => (currentPosition + index) % width === 0);
+    if (!isAtLeftEdge) {
+      currentPosition -= 1;
     }
+    if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
+      currentPosition += 1;
+    }
+
 
     draw()
   }
@@ -300,17 +286,14 @@ document.addEventListener('DOMContentLoaded', () => {
   function moveRight() {
     undraw()
 
-    const isAtRightEdge = current.some(index => (currentPosition + index) % width == width - 1)
-
-    if (!isLocked) {
-      const isAtRightEdge = current.some(index => (currentPosition + index) % width === width - 1);
-      if (!isAtRightEdge) {
-        currentPosition += 1;
-      }
-      if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
-        currentPosition -= 1;
-      }
+    const isAtRightEdge = current.some(index => (currentPosition + index) % width === width - 1);
+    if (!isAtRightEdge) {
+      currentPosition += 1;
     }
+    if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
+      currentPosition -= 1;
+    }
+
 
 
     draw()
@@ -448,9 +431,9 @@ document.addEventListener('DOMContentLoaded', () => {
       displayShape()
       addScore()
       gameOver()
+
     }
   }
-
 
   var root = document.documentElement
 
