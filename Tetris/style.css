@@ -117,7 +117,6 @@ button:active {
     font-size: 24px;
     text-align: center;
     padding-top: 200px;
-    /* Adjust as needed to center the content */
 }
 
 .pause-screen button {
@@ -137,3 +136,55 @@ button:active {
     letter-spacing: 0.05em;
     border-radius: 10px;
 }
+
+.input {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+input[type="range"] {
+    position: absolute;
+    top: 56%;
+    left: 60.5%;
+    width: 10%;
+    height: 10px;
+    background: #ddd; 
+    border-radius: 10px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  
+  input[type="range"]:active {
+    opacity: 1;
+  }
+  
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 10px;
+    background: #3498db; 
+    cursor: pointer;
+  }
+  
+  input[type="range"]::-webkit-slider-runnable-track {
+    background: rgb(75, 74, 74); 
+    border-radius: 10px;
+  }
+  
+  input[type="range"]:focus::-webkit-slider-runnable-track {
+    background: #3498db;
+  }
+  
+  label {
+    position: absolute;
+    top: 50.5%;
+    left: 60.8%;
+    font-family: "Poppins", sans-serif;
+    font-size: 1.2em;
+    color: #3498db;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }

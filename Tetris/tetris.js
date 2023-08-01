@@ -427,11 +427,12 @@ document.addEventListener('DOMContentLoaded', () => {
       ghostPiece = current
       currentPosition = 4
       ghostPosition = 4
+      currentRotation = 0
+      ghostRotation = 0
       draw()
       displayShape()
       addScore()
       gameOver()
-
     }
   }
 
@@ -481,7 +482,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const audio = document.getElementById('backgroundMusic')
-  let isMusicPlaying = false
+  const volumeSlider = document.getElementById('volumeSlider')
+
+  // programming a volume slider
+  volumeSlider.addEventListener('input', () => {
+    const volumeValue = parseFloat(volumeSlider.value)
+    audio.volume = volumeValue
+  })
 
   // making start button work
   startButton.addEventListener('click', () => {
