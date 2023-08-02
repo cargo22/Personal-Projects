@@ -136,10 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // space bar
     } else if (e.keyCode == 32) {
       while (!isCollision(current, currentPosition)) {
-        moveDown()
+        moveDownSpace()
       }
-      moveDown()
-      undrawGhostPiece()
+      moveDownSpace()
     }
   }
 
@@ -237,14 +236,20 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPosition += width;
     draw();
     if (isCollision(current, currentPosition)) {
-      clearInterval(timerID) 
+      clearInterval(timerID)
       setTimeout(() => {
         freeze()
-        undrawGhostPiece()
+        timerID = setInterval(moveDown, 1000)
       }, 1000)
     }
   }
-  
+
+  function moveDownSpace() {
+    undraw()
+    currentPosition += width
+    draw()
+    freeze()
+  }
 
 
   function moveLeft() {
@@ -438,11 +443,11 @@ document.addEventListener('DOMContentLoaded', () => {
       addScore()
       gameOver()
 
-       while (!isCollision(ghostPiece, ghostPosition)) {
-      ghostPosition += width
-    }
-    ghostPosition -= width
-    drawGhostPiece()
+      while (!isCollision(ghostPiece, ghostPosition)) {
+        ghostPosition += width
+      }
+      ghostPosition -= width
+      drawGhostPiece()
     }
   }
 
@@ -542,15 +547,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
-
-  // defining when the game is over
-  function gameOver() {
-    if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
-      scoreDisplay.innerHTML = 'end'
-      clearInterval(timerID)
-    }
-  }
-
 
 
 })
