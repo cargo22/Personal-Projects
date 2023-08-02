@@ -232,15 +232,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // movement
   // ------------------------------------------------------------------------------------------------
-  let isDelayed = false
-  const lockDelay = 1000
-
   function moveDown() {
     undraw();
     currentPosition += width;
-    draw()
-    freeze()
+    draw();
+    if (isCollision(current, currentPosition)) {
+      clearInterval(timerID) 
+      setTimeout(() => {
+        freeze()
+        undrawGhostPiece()
+      }, 1000)
+    }
   }
+  
 
 
   function moveLeft() {
@@ -421,18 +425,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (current.some(index => squares[currentPosition + index + width].classList.contains('taken'))) {
       current.forEach(index => squares[currentPosition + index].classList.add('taken'))
       undrawGhostPiece()
+      currentRotation = 0
+      ghostRotation = 0
       random = nextRandom
       nextRandom = Math.floor(Math.random() * blocks.length)
       current = blocks[random][currentRotation]
       ghostPiece = current
       currentPosition = 4
       ghostPosition = 4
-      currentRotation = 0
-      ghostRotation = 0
       draw()
       displayShape()
       addScore()
       gameOver()
+
+       while (!isCollision(ghostPiece, ghostPosition)) {
+      ghostPosition += width
+    }
+    ghostPosition -= width
+    drawGhostPiece()
     }
   }
 
