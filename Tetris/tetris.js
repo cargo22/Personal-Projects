@@ -235,13 +235,19 @@ document.addEventListener('DOMContentLoaded', () => {
     undraw();
     currentPosition += width;
     draw();
-    if (isCollision(current, currentPosition)) {
-      clearInterval(timerID)
+    if (isCollision(current, currentPosition - width)) {
       setTimeout(() => {
+        moveUp()
         freeze()
-        timerID = setInterval(moveDown, 1000)
       }, 1000)
     }
+  }
+
+  function moveUp() {
+    undraw() 
+    currentPosition -= width
+    draw()
+    freeze()
   }
 
   function moveDownSpace() {
