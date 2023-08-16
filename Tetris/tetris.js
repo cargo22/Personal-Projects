@@ -136,9 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // space bar
     } else if (e.keyCode == 32) {
       while (!isCollision(current, currentPosition)) {
-        moveDownSpace()
+        moveDown()
       }
-      moveDownSpace()
+      moveDown()
     }
   }
 
@@ -232,31 +232,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // movement
   // ------------------------------------------------------------------------------------------------
   function moveDown() {
-    undraw();
-    currentPosition += width;
-    draw();
-    if (isCollision(current, currentPosition - width)) {
-      setTimeout(() => {
-        moveUp()
-        freeze()
-      }, 1000)
-    }
-  }
-
-  function moveUp() {
-    undraw() 
-    currentPosition -= width
-    draw()
-    freeze()
-  }
-
-  function moveDownSpace() {
     undraw()
     currentPosition += width
     draw()
     freeze()
   }
-
 
   function moveLeft() {
     undraw()
@@ -444,17 +424,18 @@ document.addEventListener('DOMContentLoaded', () => {
       ghostPiece = current
       currentPosition = 4
       ghostPosition = 4
+      drawGhostPiece()
       draw()
       displayShape()
       addScore()
       gameOver()
 
-      while (!isCollision(ghostPiece, ghostPosition)) {
-        ghostPosition += width
-      }
-      ghostPosition -= width
-      drawGhostPiece()
     }
+    while (!isCollision(ghostPiece, ghostPosition)) {
+      ghostPosition += width
+    }
+    ghostPosition -= width
+    drawGhostPiece()
   }
 
   var root = document.documentElement
