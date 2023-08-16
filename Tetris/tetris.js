@@ -414,29 +414,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function freeze() {
     if (current.some(index => squares[currentPosition + index + width].classList.contains('taken'))) {
-      current.forEach(index => squares[currentPosition + index].classList.add('taken'))
-      undrawGhostPiece()
-      currentRotation = 0
-      ghostRotation = 0
-      random = nextRandom
-      nextRandom = Math.floor(Math.random() * blocks.length)
-      current = blocks[random][currentRotation]
-      ghostPiece = current
-      currentPosition = 4
-      ghostPosition = 4
-      drawGhostPiece()
-      draw()
-      displayShape()
-      addScore()
-      gameOver()
+      const isAtBottom = current.some(index => (currentPosition + index) + width * 2 >= 200)
 
+      if (isAtBottom) {
+        const delayLock = setTimeout(() => {
+          clearTimeout(delayLock)
+          lockPiece()
+        }, 300);
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowLeft') {
+            moveLeft()
+          } else if (e.key === 'ArrowRight') {
+            moveRight()
+          }
+        }, { once: true })
+      } else {
+        lockPiece()
+      }
     }
-    while (!isCollision(ghostPiece, ghostPosition)) {
-      ghostPosition += width
-    }
-    ghostPosition -= width
-    drawGhostPiece()
   }
+
+
+  function lockPiece() {
+    current.forEach(index => squares[currentPosition + index].classList.add('taken'))
+    undrawGhostPiece()
+    currentRotation = 0
+    ghostRotation = 0
+    random = nextRandom
+    nextRandom = Math.floor(Math.random() * blocks.length)
+    current = blocks[random][currentRotation]
+    ghostPiece = current
+    currentPosition = 4
+    ghostPosition = 4
+    drawGhostPiece()
+    draw()
+    displayShape()
+    addScore()
+    gameOver()
+  }
+
+
 
   var root = document.documentElement
 
