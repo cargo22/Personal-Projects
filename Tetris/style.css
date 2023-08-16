@@ -83,15 +83,23 @@ button:active {
     background-color: white;
 }
 
-.grid h3 {
+.grid h3{
     color: #3498db;
     position: absolute;
-    top: -70px;
-    left: 38px;
+    top: -22%;
+    left: 25%;
     font-family: "Poppins", sans-serif;
-    font-size: 2em;
+    font-size: 1.5em;
 }
 
+h3 {
+    color: #3498db;
+    position: absolute;
+    top: 19%;
+    left: 46%;
+    font-family: "Poppins", sans-serif;
+    font-size: 1.5em; 
+}
 .image {
     position: absolute;
     left: 50%;
