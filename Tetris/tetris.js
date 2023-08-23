@@ -4,11 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const grid = document.querySelector('.grid')
   let squares = Array.from(document.querySelectorAll('.grid div'))
   const scoreDisplay = document.querySelector('#score')
+  const levelDisplay = document.querySelector('#level')
   const startButton = document.querySelector('#startButton')
   let nextRandom = 0
   const width = 10
   let timerID
   let score = 0
+  let fallSpeed = 1000
   const colors = [
     'orange',
     'red',
@@ -136,9 +138,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // space bar
     } else if (e.keyCode == 32) {
       while (!isCollision(current, currentPosition)) {
-        moveDown()
+        moveDownSpace()
       }
-      moveDown()
+      moveDownSpace()
     }
   }
 
@@ -160,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         escapePressed = true
       } else {
         if (isPaused) {
-          timerID = setInterval(moveDown, 1000)
+          timerID = setInterval(moveDown, fallSpeed)
           isPaused = false
           hidePauseScreen()
           audio.play()
@@ -202,7 +204,10 @@ document.addEventListener('DOMContentLoaded', () => {
       current = blocks[random][currentRotation]
       ghostPiece = current
       score = 0
+      fallSpeed = 1000
+      currentLevel = 0
       scoreDisplay.innerHTML = score
+      levelDisplay.innerHTML = currentLevel
       draw()
       drawGhostPiece()
       nextRandom = Math.floor(Math.random() * blocks.length)
@@ -210,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
       hidePauseScreen()
 
       // start game again
-      timerID = setInterval(moveDown, 1000);
+      timerID = setInterval(moveDown, fallSpeed);
     }
 
   }
@@ -222,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hidePauseScreen()
     draw()
     drawGhostPiece()
-    timerID = setInterval(moveDown, 1000)
+    timerID = setInterval(moveDown, fallSpeed)
     nextRandom = Math.floor(Math.random() * blocks.length)
     displayShape()
     audio.play()
@@ -232,10 +237,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // movement
   // ------------------------------------------------------------------------------------------------
   function moveDown() {
+    if (lockingDelay) {
+      return; // Prevent moving down during locking delay
+    }
+
+    undraw();
+    currentPosition += width;
+    draw();
+    freeze();
+  }
+
+
+  function moveDownSpace() {
     undraw()
     currentPosition += width
     draw()
-    freeze()
+    freezeSpace()
   }
 
   function moveLeft() {
@@ -412,28 +429,64 @@ document.addEventListener('DOMContentLoaded', () => {
     );
   }
 
+  let lockingDelay = false;
+
   function freeze() {
     if (current.some(index => squares[currentPosition + index + width].classList.contains('taken'))) {
-      const isAtBottom = current.some(index => (currentPosition + index) + width * 2 >= 200)
+      const isAtBottom = current.some(index => (currentPosition + index) + width * 2 >= 200);
 
-      if (isAtBottom) {
+      if (isAtBottom || current.some(index => squares[currentPosition + index + width].classList.contains('taken'))) {
+        lockingDelay = true;
+
         const delayLock = setTimeout(() => {
-          clearTimeout(delayLock)
-          lockPiece()
+          clearTimeout(delayLock);
+          lockingDelay = false;
+          lockPiece();
         }, 300);
 
         document.addEventListener('keydown', (e) => {
-          if (e.key === 'ArrowLeft') {
-            moveLeft()
-          } else if (e.key === 'ArrowRight') {
-            moveRight()
+          if (lockingDelay) {
+            e.preventDefault(); // Prevent default arrow down behavior
           }
-        }, { once: true })
+
+          if (e.key === 'ArrowLeft') {
+            moveLeft();
+          } else if (e.key === 'ArrowRight') {
+            moveRight();
+          }
+        }, { once: true });
       } else {
-        lockPiece()
+        lockPiece();
       }
     }
   }
+
+
+  function freezeSpace() {
+    if (current.some(index => squares[currentPosition + index + width].classList.contains('taken'))) {
+      current.forEach(index => squares[currentPosition + index].classList.add('taken'))
+      undrawGhostPiece()
+      currentRotation = 0
+      ghostRotation = 0
+      random = nextRandom
+      nextRandom = Math.floor(Math.random() * blocks.length)
+      current = blocks[random][currentRotation]
+      ghostPiece = current
+      currentPosition = 4
+      ghostPosition = 4
+      drawGhostPiece()
+      draw()
+      displayShape()
+      addScore()
+    }
+    while (!isCollision(ghostPiece, ghostPosition)) {
+      ghostPosition += width
+    }
+    ghostPosition -= width
+    drawGhostPiece()
+  }
+
+
 
 
   function lockPiece() {
@@ -451,7 +504,6 @@ document.addEventListener('DOMContentLoaded', () => {
     draw()
     displayShape()
     addScore()
-    gameOver()
   }
 
 
@@ -522,22 +574,22 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       draw()
       drawGhostPiece()
-      timerID = setInterval(moveDown, 1000)
+      timerID = setInterval(moveDown, fallSpeed)
       nextRandom = Math.floor(Math.random() * blocks.length)
       displayShape()
       startButton.disabled = true
       audio.play()
       startButton.innerText = 'Pause'
     }
-
     startButton.disabled = false
   })
 
   function addScore() {
     for (let i = 0; i < 199; i += width) {
       const row = [i, i + 1, i + 2, i + 3, i + 4, i + 5, i + 6, i + 7, i + 8, i + 9]
-
+      
       if (row.every(index => squares[index].classList.contains('taken'))) {
+        addLevel()
         score += 10
         scoreDisplay.innerHTML = score
         row.forEach(index => {
@@ -551,7 +603,23 @@ document.addEventListener('DOMContentLoaded', () => {
         squares.forEach(cell => grid.appendChild(cell))
       }
     }
+    
   }
 
+  // adding levels to the game
+  // ------------------------------------------------------------------------------------------------
+  let currentLevel = 0
+  levelDisplay.innerHTML = currentLevel
 
+  function addLevel() {  
+    if (score % 100 == 0) {
+      currentLevel++
+      fallSpeed = fallSpeed * .95
+      clearInterval(timerID)
+      timerID = setInterval(moveDown, fallSpeed)
+      console.log(fallSpeed)
+      levelDisplay.innerHTML = currentLevel
+    }
+  }
+  
 })
