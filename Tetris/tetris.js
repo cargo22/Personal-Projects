@@ -16,7 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
     'red',
     'purple',
     'green',
-    'blue'
+    'blue',
+    'yellow',
+    'cyan'
   ]
 
   // drawing the blocks
@@ -27,11 +29,33 @@ document.addEventListener('DOMContentLoaded', () => {
     [1, width + 1, width * 2 + 1, width * 2],
     [width, width * 2, width * 2 + 1, width * 2 + 2]
   ]
+
+  const jBlock = [
+    [1, 2, width + 2, width * 2 + 2],
+    [width, width + 1, width + 2, width * 2],
+    [1, width + 1, width * 2 + 1, width * 2 + 2],
+    [width + 2, width * 2, width * 2 + 1, width * 2 + 2]
+  ]
+
   const zBlock = [
     [0, width, width + 1, width * 2 + 1],
     [width + 1, width + 2, width * 2, width * 2 + 1],
     [0, width, width + 1, width * 2 + 1],
     [width + 1, width + 2, width * 2, width * 2 + 1]
+  ]
+
+  const sBlock = [
+    [1, width, width + 1, width * 2],
+    [width + 1, width + 2, width * 2, width * 2 + 1],
+    [1, width, width + 1, width * 2],
+    [width + 1, width + 2, width * 2, width * 2 + 1]
+  ]
+
+  const sBlockFlipped = [
+    [1, width + 1, width + 2, width * 2],
+    [0, 1, width + 1, width + 2],
+    [1, width + 1, width + 2, width * 2],
+    [0, 1, width + 1, width + 2]
   ]
 
   const tBlock = [
@@ -56,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ]
 
   // putting the blocks in a list and setting their initial position/rotation
-  const blocks = [lBlock, zBlock, tBlock, oBlock, iBlock]
+  const blocks = [lBlock, zBlock, tBlock, oBlock, iBlock, jBlock, sBlock]
   let currentPosition = 4
   let currentRotation = 0
   let ghostPosition = 4
@@ -337,6 +361,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function rotate() {
     undraw()
 
+    if (current == sBlock) {
+      current = sBlockFlipped
+    }
     currentRotation++
     if (currentRotation == current.length) {
       currentRotation = 0
@@ -539,7 +566,9 @@ document.addEventListener('DOMContentLoaded', () => {
     [0, displayWidth, displayWidth + 1, displayWidth * 2 + 1],
     [1, displayWidth, displayWidth + 1, displayWidth + 2],
     [0, 1, displayWidth, displayWidth + 1],
-    [1, displayWidth + 1, displayWidth * 2 + 1, displayWidth * 3 + 1]
+    [1, displayWidth + 1, displayWidth * 2 + 1, displayWidth * 3 + 1],
+    [1, 2, displayWidth + 2, displayWidth * 2 + 2],
+    [1, displayWidth, displayWidth + 1, displayWidth * 2]
   ]
 
   function displayShape() {
@@ -587,7 +616,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function addScore() {
     for (let i = 0; i < 199; i += width) {
       const row = [i, i + 1, i + 2, i + 3, i + 4, i + 5, i + 6, i + 7, i + 8, i + 9]
-      
+
       if (row.every(index => squares[index].classList.contains('taken'))) {
         addLevel()
         score += 10
@@ -603,7 +632,7 @@ document.addEventListener('DOMContentLoaded', () => {
         squares.forEach(cell => grid.appendChild(cell))
       }
     }
-    
+
   }
 
   // adding levels to the game
@@ -611,7 +640,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentLevel = 0
   levelDisplay.innerHTML = currentLevel
 
-  function addLevel() {  
+  function addLevel() {
     if (score % 100 == 0) {
       currentLevel++
       fallSpeed = fallSpeed * .95
@@ -621,5 +650,5 @@ document.addEventListener('DOMContentLoaded', () => {
       levelDisplay.innerHTML = currentLevel
     }
   }
-  
+
 })
