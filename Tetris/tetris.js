@@ -267,8 +267,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function moveDownSpace() {
     undraw()
+    undrawGhostPiece()
     currentPosition += width
     draw()
+    drawGhostPiece()
     freezeSpace()
   }
 
@@ -620,9 +622,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const squaresRemoved = squares.splice(i, width)
         squares = squaresRemoved.concat(squares)
         squares.forEach(cell => grid.appendChild(cell))
+        currentPosition = 4
+        console.log(squares)
       }
     }
-
   }
 
   // adding levels to the game
