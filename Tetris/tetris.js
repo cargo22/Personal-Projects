@@ -32,9 +32,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const jBlock = [
     [1, 2, width + 2, width * 2 + 2],
-    [width, width + 1, width + 2, width * 2],
+    [width + 2, width * 2, width * 2 + 1, width * 2 + 2],
     [1, width + 1, width * 2 + 1, width * 2 + 2],
-    [width + 2, width * 2, width * 2 + 1, width * 2 + 2]
+    [width, width + 1, width + 2, width * 2]
   ]
 
   const zBlock = [
@@ -46,15 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const sBlock = [
     [1, width, width + 1, width * 2],
-    [width + 1, width + 2, width * 2, width * 2 + 1],
-    [1, width, width + 1, width * 2],
-    [width + 1, width + 2, width * 2, width * 2 + 1]
-  ]
-
-  const sBlockFlipped = [
-    [1, width + 1, width + 2, width * 2],
     [0, 1, width + 1, width + 2],
-    [1, width + 1, width + 2, width * 2],
+    [1, width, width + 1, width * 2],
     [0, 1, width + 1, width + 2]
   ]
 
@@ -361,9 +354,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function rotate() {
     undraw()
 
-    if (current == sBlock) {
-      current = sBlockFlipped
-    }
     currentRotation++
     if (currentRotation == current.length) {
       currentRotation = 0
