@@ -443,12 +443,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // ------------------------------------------------------------------------------------------------
 
   function isCollision(type, position) {
-    return type.some((index) =>
-      squares[position + index + width * 2].classList.contains('taken')
-    );
+    return type.some((index) => {
+      const nextIndex = position + index + width * 2
+      const isValidIndex = nextIndex >= 0 && nextIndex < squares.length
+      
+      if (isValidIndex) {
+        return squares[nextIndex].classList.contains('taken')
+      }
+      
+      return true
+    });
   }
+  
 
-  let lockingDelay = false;
+  let lockingDelay = false
 
   function freeze() {
     if (current.some(index => squares[currentPosition + index + width].classList.contains('taken'))) {
@@ -458,24 +466,24 @@ document.addEventListener('DOMContentLoaded', () => {
         lockingDelay = true;
 
         const delayLock = setTimeout(() => {
-          clearTimeout(delayLock);
-          lockingDelay = false;
-          lockPiece();
-        }, 300);
+          clearTimeout(delayLock)
+          lockingDelay = false
+          lockPiece()
+        }, 300)
 
         document.addEventListener('keydown', (e) => {
           if (lockingDelay) {
-            e.preventDefault(); // Prevent default arrow down behavior
+            e.preventDefault() 
           }
 
           if (e.key === 'ArrowLeft') {
-            moveLeft();
+            moveLeft()
           } else if (e.key === 'ArrowRight') {
-            moveRight();
+            moveRight()
           }
-        }, { once: true });
+        }, { once: true })
       } else {
-        lockPiece();
+        lockPiece()
       }
     }
   }
@@ -495,8 +503,8 @@ document.addEventListener('DOMContentLoaded', () => {
       ghostPosition = 4
       drawGhostPiece()
       draw()
-      displayShape()
       addScore()
+      displayShape()
     }
     while (!isCollision(ghostPiece, ghostPosition)) {
       ghostPosition += width
@@ -613,6 +621,13 @@ document.addEventListener('DOMContentLoaded', () => {
         addLevel()
         score += 10
         scoreDisplay.innerHTML = score
+
+        current.forEach(index => {
+          squares[currentPosition + index].classList.remove('block')
+          squares[currentPosition + index].style.backgroundColor = ''
+        })
+
+
         row.forEach(index => {
           squares[index].classList.remove('taken')
           squares[index].classList.remove('block')
@@ -622,8 +637,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const squaresRemoved = squares.splice(i, width)
         squares = squaresRemoved.concat(squares)
         squares.forEach(cell => grid.appendChild(cell))
-        currentPosition = 4
-        console.log(squares)
+
+        draw()
       }
     }
   }
