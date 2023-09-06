@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let squares = Array.from(document.querySelectorAll('.grid div'))
   const scoreDisplay = document.querySelector('#score')
   const levelDisplay = document.querySelector('#level')
+  const pauseMessage = document.querySelector('#pauseMessage')
   const startButton = document.querySelector('#startButton')
   let nextRandom = 0
   const width = 10
@@ -262,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
     currentPosition += width;
     draw();
     freeze();
+    gameOver()
   }
 
 
@@ -446,15 +448,15 @@ document.addEventListener('DOMContentLoaded', () => {
     return type.some((index) => {
       const nextIndex = position + index + width * 2
       const isValidIndex = nextIndex >= 0 && nextIndex < squares.length
-      
+
       if (isValidIndex) {
         return squares[nextIndex].classList.contains('taken')
       }
-      
+
       return true
     });
   }
-  
+
 
   let lockingDelay = false
 
@@ -473,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.addEventListener('keydown', (e) => {
           if (lockingDelay) {
-            e.preventDefault() 
+            e.preventDefault()
           }
 
           if (e.key === 'ArrowLeft') {
@@ -643,13 +645,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function gameOver() {
+    console.log('Game Over function called');
+    if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
+        clearInterval(timerID);
+        timerID = null;
+        const pauseMessage = document.querySelector('#pauseMessage')
+        console.log('pauseMessage element:', pauseMessage); // Log the selected element
+        pauseMessage.innerText = 'Game Over';
+        showPauseScreen();
+    }
+}
+
+
+
   // adding levels to the game
   // ------------------------------------------------------------------------------------------------
   let currentLevel = 0
   levelDisplay.innerHTML = currentLevel
 
   function addLevel() {
-    if (score % 100 == 0) {
+    if (score % 100 == 0) { 
       currentLevel++
       fallSpeed = fallSpeed * .95
       clearInterval(timerID)
