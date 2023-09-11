@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const levelDisplay = document.querySelector('#level')
   const pauseMessage = document.querySelector('#pauseMessage')
   const startButton = document.querySelector('#startButton')
+  const scoreMessage = document.querySelector('#finalScore');
   let nextRandom = 0
   const width = 10
   let timerID
@@ -555,6 +556,15 @@ document.addEventListener('DOMContentLoaded', () => {
     pauseScreen.style.display = 'none'
   }
 
+  function showFinalScreen() {
+    const finalScreen = document.getElementById('resultScreen')
+    finalScreen.style.display = 'block'
+  }
+
+  function hidePauseScreen() {
+    const finalScreen = document.getElementById('resultScreen')
+    finalScreen.style.display = 'none'
+  }
   // show the next block in rotation
   // ------------------------------------------------------------------------------------------------
 
@@ -648,14 +658,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function gameOver() {
     console.log('Game Over function called');
     if (current.some(index => squares[currentPosition + index].classList.contains('taken'))) {
-        clearInterval(timerID);
-        timerID = null;
-        const pauseMessage = document.querySelector('#pauseMessage')
-        console.log('pauseMessage element:', pauseMessage); // Log the selected element
-        pauseMessage.innerText = 'Game Over';
-        showPauseScreen();
+      clearInterval(timerID);
+      timerID = null;
+      showFinalScreen();
+      scoreMessage.innerHTML = score;
     }
-}
+  }
 
 
 
@@ -665,7 +673,7 @@ document.addEventListener('DOMContentLoaded', () => {
   levelDisplay.innerHTML = currentLevel
 
   function addLevel() {
-    if (score % 100 == 0) { 
+    if (score % 100 == 0) {
       currentLevel++
       fallSpeed = fallSpeed * .95
       clearInterval(timerID)
