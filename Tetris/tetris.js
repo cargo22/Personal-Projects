@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const levelDisplay = document.querySelector('#level')
   const pauseMessage = document.querySelector('#pauseMessage')
   const startButton = document.querySelector('#startButton')
-  const scoreMessage = document.querySelector('#finalScore');
   let nextRandom = 0
   const width = 10
   let timerID
@@ -239,6 +238,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
   }
 
+  function resetGameFinal() {
+    // removing all blocks from the grid
+    squares.slice(0, 200).forEach(square => {
+      square.classList.remove('taken')
+      square.classList.remove('block')
+      square.classList.remove('ghost')
+      square.style.backgroundColor = ''
+    });
+
+    startButton.disabled = false
+    audio.currentTime = 0
+    audio.play()
+
+    if (timerID) {
+      clearInterval(timerID)
+      timerID = null
+      isPaused = false
+      hideFinalScreen()
+      scoreDisplay.innerHTML = score
+    } else {
+      // resetting all values
+      currentPosition = 4
+      currentRotation = 0
+      ghostPosition = 4
+      ghostRotation = 0
+      random = Math.floor(Math.random() * blocks.length)
+      current = blocks[random][currentRotation]
+      ghostPiece = current
+      score = 0
+      fallSpeed = 1000
+      currentLevel = 0
+      scoreDisplay.innerHTML = score
+      levelDisplay.innerHTML = currentLevel
+      draw()
+      drawGhostPiece()
+      nextRandom = Math.floor(Math.random() * blocks.length)
+      displayShape()
+      hideFinalScreen()
+
+      // start game again
+      timerID = setInterval(moveDown, fallSpeed);
+    }
+
+  }
   const resetButton = document.getElementById('restartButton')
   const resumeButton = document.getElementById('resumeButton')
   resetButton.addEventListener('click', resetGame)
@@ -248,10 +291,12 @@ document.addEventListener('DOMContentLoaded', () => {
     drawGhostPiece()
     timerID = setInterval(moveDown, fallSpeed)
     nextRandom = Math.floor(Math.random() * blocks.length)
-    displayShape()
     audio.play()
     startButton.disabled = false
   })
+
+  const finalRestartButton = document.getElementById('freshRestart')
+  finalRestartButton.addEventListener('click', resetGameFinal)
 
   // movement
   // ------------------------------------------------------------------------------------------------
@@ -561,7 +606,7 @@ document.addEventListener('DOMContentLoaded', () => {
     finalScreen.style.display = 'block'
   }
 
-  function hidePauseScreen() {
+  function hideFinalScreen() {
     const finalScreen = document.getElementById('resultScreen')
     finalScreen.style.display = 'none'
   }
@@ -661,7 +706,7 @@ document.addEventListener('DOMContentLoaded', () => {
       clearInterval(timerID);
       timerID = null;
       showFinalScreen();
-      scoreMessage.innerHTML = score;
+      audio.pause()
     }
   }
 
@@ -675,7 +720,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function addLevel() {
     if (score % 100 == 0) {
       currentLevel++
-      fallSpeed = fallSpeed * .95
+      fallSpeed = fallSpeed * .85
       clearInterval(timerID)
       timerID = setInterval(moveDown, fallSpeed)
       console.log(fallSpeed)
