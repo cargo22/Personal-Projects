@@ -10,4 +10,5 @@ Essentially, I used this video as a stepping stool and built on it using my own 
 I also used openAI's popular ChatGPT tool to help me understand more about the languages, as I'm pretty new to javascript, HTML, and css. ChatGPT was 
 extremely useful in teaching me the basics to the language and helped me solve a couple of problems I've encountered along the way.
 
+Instruction on how to play will be on my GitHub pages. Link here: [https://cargo22.github.io/Personal-Projects/overview]. 
 I hope you enjoy, and thank you for your support!
