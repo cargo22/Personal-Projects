@@ -1,7 +1,7 @@
 Hello there! Welcome to my personal Tetris game. I'm a massive fan of the franchise, so I was interested in making my own spin on the game. 
 As an avid player of the game, I immediately had a picture in my head of how I wanted my game to turn out. I hope you enjoy!
 
-# Preface: 
+## Preface: 
 
 I first want to preface the fact that I drew inspiration from a few sources. First, I followed a tutorial from the YouTube channel freeCodeCamp.org.
 The lovely creators put together a step-by-step tutorial on how to create a basic tetris game. Here's the link if you're interested: [https://www.youtube.com/watch?v=rAUn1Lom6dw&t=1s]
