@@ -10,5 +10,4 @@ Essentially, I used this video as a stepping stool and built on it using my own 
 I also used openAI's popular ChatGPT tool to help me understand more about the languages, as I'm pretty new to javascript, HTML, and css. ChatGPT was 
 extremely useful in teaching me the basics to the language and helped me solve a couple of problems I've encountered along the way.
 
-If you're interested in playing, download the code and open the HTML file. It should redirect you to your browser of choice, allowing you to play 
-the game. Enjoy!
+I hope you enjoy, and thank you for your support!
