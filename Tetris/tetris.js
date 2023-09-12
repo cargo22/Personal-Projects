@@ -290,7 +290,6 @@ document.addEventListener('DOMContentLoaded', () => {
     draw()
     drawGhostPiece()
     timerID = setInterval(moveDown, fallSpeed)
-    nextRandom = Math.floor(Math.random() * blocks.length)
     audio.play()
     startButton.disabled = false
   })
@@ -403,33 +402,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function rotate() {
     undraw()
-
+    let prevRotation = currentRotation
     currentRotation++
     if (currentRotation == current.length) {
       currentRotation = 0
     }
-    current = blocks[random][currentRotation]
+
+    const newCurrent = blocks[random][currentRotation]
+    if (!isCollision(current, currentPosition)) {
+      current = newCurrent
+    } else {
+      currentRotation = prevRotation
+    }
     checkRotatedPosition()
 
     draw()
   }
 
+
   function rotateGhostPiece() {
     undrawGhostPiece()
+    let prevPiece = ghostPiece
 
     ghostRotation++
     if (ghostRotation === ghostPiece.length) {
       ghostRotation = 0
     }
-
-    const nextGhostPiece = blocks[random][ghostRotation]
-
+    
+    while (isCollision(ghostPiece, ghostPosition)) {
     // checking for collisions when rotating and adjust the position upward if necessary
-    while (isCollision(nextGhostPiece, ghostPosition)) {
       ghostPosition -= width
     }
-
-    ghostPiece = nextGhostPiece
+    const newGhostPiece = blocks[random][ghostRotation]
+    if(!isCollision(current, currentPosition)){
+      ghostPiece = newGhostPiece
+    } else {
+      ghostPiece = prevPiece
+    }
+    checkRotatedPositionGhost()
     drawGhostPiece()
   }
 
