@@ -1,0 +1,114 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    /* creating a gradient background */
+    background:  rgba(255, 226, 255);
+    transition: background-color 0.5s ease;
+    width: 100%;
+    height: 100vh;
+
+    /* setting the font */
+    font-family: 'Pacifico', cursive;
+    font-size: 32px;
+    color: #fff;
+    text-align: center;
+    margin-top: 20px;
+    -webkit-text-stroke: 1px #fb00e2;
+    text-shadow: 2px 2px 0 #fb00e2;
+    letter-spacing: 6px;
+}
+
+p {
+    display: block;
+    position: absolute;
+    top: 30%;
+    left: 33%;
+    transition: color 3s ease, -webkit-text-stroke 3s ease, text-shadow 3s ease;
+}
+
+
+/* Basic styling for buttons */
+button {
+    display: inline-block;
+    position: relative;
+    top: -90px;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 25px;
+    border-color: #fb00e2;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Styling for the "Yes" button */
+#yes_btn {
+    background-color: #ffffff; /* Green background */
+    color: #ffffff; /* White text */
+}
+
+/* Styling for the hover state of "Yes" button */
+#yes_btn:hover {
+    background-color: #45a049; /* Darker green background */
+}
+
+/* Styling for the "No" button */
+#no_btn {
+    background-color: #ffffff; /* Red background */
+    color: #ffffff; /* White text */
+}
+
+/* Styling for the hover state of "No" button */
+#no_btn:hover {
+    background-color: #c0392b; /* Darker red background */
+}
+
+.dark-background {
+    background-color: #000 !important; /* Black background */
+    transition: background-color 3s ease; /* Background transition effect */
+}
+.dark-background h2 {
+    color: transparent; /* Make the <h2> text transparent during dark background state */
+    -webkit-text-stroke: 0; /* Remove the webkit text stroke */
+    text-shadow: 0 0 0 transparent; /* Remove the text shadow */
+    transition: color .5s ease, -webkit-text-stroke .5s ease, text-shadow .5s ease; /* Text color, text stroke, and text shadow transition effect */
+}
+
+.dark-background .flower_image,
+.dark-background .reflected_flower_image,
+.dark-background .minion1,
+.dark-background .minion2 {
+    opacity: 0; /* Set opacity to 0 to make the images disappear */
+    transition: opacity 0.5s ease; /* Opacity transition effect */
+}
+
+.flower_image{
+    position:relative;
+    top:20px;
+    left:290px;
+}
+
+.reflected_flower_image{
+    transform:scaleX(-1);
+    position:relative;
+    top: 20px;
+    left: -290px;
+}
+
+.minion1{
+    position:absolute;
+    left:1120px;
+}
+
+.minion2{
+    position:absolute;
+    left:200px;
+}
+
+.heart_image {
+    position:relative;
+}
