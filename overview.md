@@ -10,3 +10,5 @@ Once you've reached the page, click the green "Code" button and press open in Gi
 
 # A Fun Website
 This project was a quick and creative way for me to give my girlfriend what she wanted: a formal Valentine proposal. Because we're long distance, I didn't really get the chance to ask her in person, so this was how I planned on doing so. It's a fun and light-hearted project that I really enjoyed and I hope you enjoy it too!
+
+To access it, just open the Mystery Project foler, and start open the "puzzle.html" file. That's where you begin, and the rest will come as you progress. Be prepared to answer some fun riddles!
