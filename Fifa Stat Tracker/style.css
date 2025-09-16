@@ -4,30 +4,71 @@ body {
     background-color: #0f0f0f;
 }
 
-/* Button - this controls */
-
-
-#start-screen{
-    height: 100vh;
+/* This id-selector controls the div of what people see
+ the second they visit the page*/
+#start-screen {
+    height: 100vh; /* This means the div takes up the whole page*/
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: center; /* Centering the stuff inside the div */
     align-items: center;
 }
 
+#setup-screen {
+    height: 100vh; /* This means the div takes up the whole page*/
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centering the stuff inside the div */
+    align-items: center;
+    /* Styling the text on the page */
+    color: white;
+    font-weight: bold;
+    font-size: 35px;
+}
+
+/* Styling the button that will commence the tournament*/
 #start-button{
+    /* Setting the dimensions of the button. height is 10% of height,
+     and 40% width*/
     height: 10vh;
     width: 40vh;
     font-size: 18px;
     cursor: pointer;
-    border-radius: 25px;
+    border-radius: 25px; /* This determines the rounded edges */
     background-color: #00ff66;
     font-weight: bold;
-    transition: transform 0.2s, background-color 0.2s;
+    transition: transform 0.9s, background-color 0.9s; /* This is for hover animations*/
 }
 
+/* This decides what to do once we hover. In this case, the button scales in size*/
 #start-button:hover {
     background-color: #00cc52;
     transform: scale(1.05);
+}
+
+#num-players {
+     /* Setting the dimensions of the dropdown. height is 10% of height,
+     and 20% width*/
+    height: 8vh;
+    width: 20vh;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 25px; /* This determines the rounded edges */
+    background-color: #00ff66;
+    font-weight: bold;
+    transition: transform 0.9s, background-color 0.9s; /* This is for hover animations*/
+    text-align: center;
+    margin: 15px;
+}
+
+/* This decides what to do once we hover. In this case, the button scales in size*/
+#num-players:hover {
+    background-color: #00cc52;
+    transform: scale(1.05);
+}
+
+#fc-logo {
+    padding: 10vh 10vh;
 }
 
 #tournament-hub{

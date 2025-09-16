@@ -1,8 +1,8 @@
-const start = document.querySelector("#start-button")
-const initial_screen = document.querySelector("#start-screen")
-const hub = document.querySelector("#tournament-hub")
+const start = document.getElementById("start-button");
+const initial_screen = document.getElementById("start-screen");
+const setup_screen = document.getElementById("setup-screen");
 
 start.addEventListener("click", () => {
     initial_screen.style.display = "none";
-    hub.style.display = "block";
+    setup_screen.style.display = "flex";
 });
