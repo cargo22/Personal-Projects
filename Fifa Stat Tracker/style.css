@@ -15,7 +15,7 @@ body {
 }
 
 #setup-screen {
-    height: 100vh; /* This means the div takes up the whole page*/
+    height: 90vh; /* This means the div takes up the whole page*/
     display: flex;
     flex-direction: column;
     justify-content: center; /* Centering the stuff inside the div */
@@ -46,6 +46,26 @@ body {
     transform: scale(1.05);
 }
 
+#advance-button {
+        /* Setting the dimensions of the button. height is 10% of height,
+     and 40% width*/
+    height: 10vh;
+    width: 22vh;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 25px; /* This determines the rounded edges */
+    background-color: #00ff66;
+    font-weight: bold;
+    transition: transform 0.9s, background-color 0.9s; /* This is for hover animations*/
+    margin: 70px;
+}
+
+/* This decides what to do once we hover. In this case, the button scales in size*/
+#advance-button:hover {
+    background-color: #00cc52;
+    transform: scale(1.05);
+}
+
 #num-players {
      /* Setting the dimensions of the dropdown. height is 10% of height,
      and 20% width*/
@@ -58,7 +78,7 @@ body {
     font-weight: bold;
     transition: transform 0.9s, background-color 0.9s; /* This is for hover animations*/
     text-align: center;
-    margin: 15px;
+    margin: 25px;
 }
 
 /* This decides what to do once we hover. In this case, the button scales in size*/
