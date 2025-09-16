@@ -1,0 +1,35 @@
+/*  Body - this is the color and font of the page itself*/
+body {
+    font-family: Arial, sans-serif;
+    background-color: #0f0f0f;
+}
+
+/* Button - this controls */
+
+
+#start-screen{
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#start-button{
+    height: 10vh;
+    width: 40vh;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 25px;
+    background-color: #00ff66;
+    font-weight: bold;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+#start-button:hover {
+    background-color: #00cc52;
+    transform: scale(1.05);
+}
+
+#tournament-hub{
+    display: none;
+}
