@@ -42,7 +42,7 @@ body {
 
 /* This is the screen that lists all matchups and prompts user to enter scores.*/
 #matches{
-    height: 90vh; /* This means the div takes up 90% of the page, regardless of resizing.*/
+    height: 100vh; /* This means the div takes up 90% of the page, regardless of resizing.*/
     display: flex;
     flex-direction: column;
     justify-content: center; /* Centering the stuff inside the div */
@@ -166,11 +166,51 @@ body {
 .game {
     display: flex;
     align-items: center;
-    gap: 8px; /* spacing between elements */
-    margin-bottom: 10px;
+    justify-content: center;
+    margin: 10px 0;
+    gap: 10px; /* space between items */
 }
 
-.game input {
-    width: 50px; /* keeps inputs compact */
+.player {
+    font-weight: bold;
+    min-width: 100px; /* keeps names aligned */
     text-align: center;
+}
+
+.score {
+    width: 50px;
+    text-align: center;
+}
+
+.vs {
+    font-weight: bold;
+    margin: 0 10px;
+}
+
+
+.game input {
+    width: 8vh; /* keeps inputs compact */
+    height: 5vh;
+    text-align: center;
+    border-radius: 25px; /* This determines the rounded edges */
+    background-color: #00ff66;
+}
+
+#results-button {
+    /* Setting the dimensions of the button. height is 10% of height,
+     and 40% width*/
+    height: 10vh;
+    width: 22vh;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 25px; /* This determines the rounded edges */
+    background-color: #00ff66;
+    font-weight: bold;
+    transition: transform 0.9s, background-color 0.9s; /* This is for hover animations*/
+    margin: 70px;
+}
+
+#results-button:hover {
+    background-color: #00cc52;
+    transform: scale(1.05);
 }

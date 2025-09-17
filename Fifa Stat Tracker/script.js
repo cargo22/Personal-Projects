@@ -6,7 +6,8 @@ const advance = document.getElementById("advance-button");
 const contestants_screen = document.getElementById("contestants");
 const tournament_hub = document.getElementById("tournament-hub");
 const names = document.getElementById("submit-names");
-const results = document.getElementById("matches");
+const matches_screen = document.getElementById("matches");
+const games = document.getElementById("games");
 
 start.addEventListener("click", () => {
     initial_screen.style.display = "none";
@@ -44,14 +45,13 @@ names.addEventListener('click', (e) => {
     player_names = [];
 
     contestants_screen.style.display = "none";
-    results.style.display = "flex";
+    matches_screen.style.display = "flex";
 
     const inputs = namesForm.querySelectorAll('input[type="text"]');
     inputs.forEach(input => {
         player_names.push(input.value.trim()); 
     });
 
-    console.log(player_names);
     // Generate matches here
     const matches = [];
     for (let i = 0; i < player_names.length; i++) {
@@ -60,20 +60,22 @@ names.addEventListener('click', (e) => {
         }
     }
 
-    // Render matches
-    results.innerHTML = '';
+    games.innerHTML = ''; // only clears inside the results div
+
     matches.forEach((match, index) => {
         const div = document.createElement('div');
         div.className = "game";
 
         div.innerHTML = `
-            <span>${match[0]}</span>
+            <span class="player">${match[0]}</span>
             <input type='number' min='0' class='score' id='score_${index}_1' placeholder="score">
-            <span>vs</span>
+            <span class="vs">vs</span>
             <input type='number' min='0' class='score' id='score_${index}_2' placeholder="score">
-            <span>${match[1]}</span>
+            <span class="player">${match[1]}</span>
         `;
 
-        results.appendChild(div);
+        games.appendChild(div); // ✅ goes inside #results, not replacing <h2> or button  
     });
+
+
 });
