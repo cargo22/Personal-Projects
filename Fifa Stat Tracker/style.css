@@ -41,6 +41,19 @@ body {
 }
 
 /* Page layout is the same as the previous one.*/
+#matches{
+    height: 90vh; /* This means the div takes up 90% of the page, regardless of resizing.*/
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centering the stuff inside the div */
+    align-items: center;
+    /* Styling the text on the page */
+    color: white;
+    font-weight: bold;
+    font-size: 35px;
+}
+
+/* Page layout is the same as the previous one.*/
 #tournament-hub{
     height: 90vh; /* This means the div takes up 90% of the page, regardless of resizing.*/
     display: flex;
@@ -108,6 +121,7 @@ body {
     margin: 25px;
 }
 
+/* Where we prompt users to enter participant names */
 #namesForm input[type='text'] {
     /* Setting the dimensions of the button. height is 10% of height,
      and 40% width*/
@@ -117,6 +131,27 @@ body {
     cursor: pointer;
     border-radius: 25px; /* This determines the rounded edges */
     background-color: #00ff66;
+    text-align: center;
+    padding: 10px;
+}
+
+#submit-names {
+    /* Setting the dimensions of the button. height is 10% of height,
+     and 40% width*/
+    height: 10vh;
+    width: 22vh;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 25px; /* This determines the rounded edges */
+    background-color: #00ff66;
+    font-weight: bold;
+    transition: transform 0.9s, background-color 0.9s; /* This is for hover animations*/
+    margin: 70px;
+}
+
+#submit-names:hover {
+    background-color: #00cc52;
+    transform: scale(1.05);
 }
 
 #fc-logo {

@@ -5,6 +5,8 @@ const players_select = document.getElementById("num-players");
 const advance = document.getElementById("advance-button");
 const contestants_screen = document.getElementById("contestants");
 const tournament_hub = document.getElementById("tournament-hub");
+const names = document.getElementById("submit-names");
+const results = document.getElementById("matches");
 
 start.addEventListener("click", () => {
     initial_screen.style.display = "none";
@@ -32,4 +34,44 @@ advance.addEventListener("click", () => {
         namesForm.appendChild(input);
         namesForm.appendChild(document.createElement('br'));
     }
+});
+
+let player_names = [];
+
+names.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    player_names = [];
+
+    contestants_screen.style.display = "none";
+    results.style.display = "flex";
+
+    const inputs = namesForm.querySelectorAll('input[type="text"]');
+    inputs.forEach(input => {
+        player_names.push(input.value.trim()); 
+    });
+
+    console.log(player_names);
+    // Generate matches here
+    const matches = [];
+    for (let i = 0; i < player_names.length; i++) {
+        for (let j = i + 1; j < player_names.length; j++) {
+            matches.push([player_names[i], player_names[j]]);
+        }
+    }
+
+    // Render matches
+    results.innerHTML = '';
+    matches.forEach((match, index) => {
+        const div = document.createElement('div');
+        div.className = "game";
+
+        div.innerHTML = `
+            <span>${match[0]} vs ${match[1]}</span>
+            <input type='number' min='0' class='score' id='score_${index}_1' placeholder="${match[0]} score">
+            <input type='number' min='0' class='score' id='score_${index}_2' placeholder="${match[1]} score">
+        `;
+
+        results.appendChild(div);
+    });
 });
