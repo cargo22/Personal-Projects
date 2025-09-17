@@ -9,11 +9,11 @@
 </head>
 <body>
     <div id="start-screen">
-        <img id="fc-logo" src="download.png">
+        <img id="fc-logo" src="fc logo.png">
         <button id="start-button">Start Tournament</button>
     </div>
 
-    <div id="setup-screen" style=" display: none;">
+    <div id="setup-screen" style="display: none;">
         <h2>Tournament Setup</h2>
         <label for="num-players"> Number of players:</label>
         <select id="num-players">
@@ -26,7 +26,14 @@
         <button id="advance-button">Advance</button>
     </div>
 
-    <div id="tournament-hub">
+    <div id="contestants" style="display: none">
+        <h1>Contestants</h1>
+        <form id="namesForm"></form>
+        <button id="submit-names">Submit</button>
+    </div>
+
+
+    <div id="tournament-hub" style="display: none">
         <h1>Tournament Hub</h1>
     </div>
 </body>

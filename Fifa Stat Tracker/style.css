@@ -14,8 +14,9 @@ body {
     align-items: center;
 }
 
+/* This is for the screen that prompts users to input the number of participants.*/
 #setup-screen {
-    height: 90vh; /* This means the div takes up the whole page*/
+    height: 90vh; /* This means the div takes up 90% of the page, regardless of resizing.*/
     display: flex;
     flex-direction: column;
     justify-content: center; /* Centering the stuff inside the div */
@@ -25,6 +26,33 @@ body {
     font-weight: bold;
     font-size: 35px;
 }
+
+/* Page layout is the same as the previous one.*/
+#contestants{
+    height: 90vh; /* This means the div takes up 90% of the page, regardless of resizing.*/
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centering the stuff inside the div */
+    align-items: center;
+    /* Styling the text on the page */
+    color: white;
+    font-weight: bold;
+    font-size: 35px;
+}
+
+/* Page layout is the same as the previous one.*/
+#tournament-hub{
+    height: 90vh; /* This means the div takes up 90% of the page, regardless of resizing.*/
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centering the stuff inside the div */
+    align-items: center;
+    /* Styling the text on the page */
+    color: white;
+    font-weight: bold;
+    font-size: 35px;
+}
+
 
 /* Styling the button that will commence the tournament*/
 #start-button{
@@ -47,7 +75,7 @@ body {
 }
 
 #advance-button {
-        /* Setting the dimensions of the button. height is 10% of height,
+    /* Setting the dimensions of the button. height is 10% of height,
      and 40% width*/
     height: 10vh;
     width: 22vh;
@@ -76,21 +104,22 @@ body {
     border-radius: 25px; /* This determines the rounded edges */
     background-color: #00ff66;
     font-weight: bold;
-    transition: transform 0.9s, background-color 0.9s; /* This is for hover animations*/
     text-align: center;
     margin: 25px;
 }
 
-/* This decides what to do once we hover. In this case, the button scales in size*/
-#num-players:hover {
-    background-color: #00cc52;
-    transform: scale(1.05);
+#namesForm input[type='text'] {
+    /* Setting the dimensions of the button. height is 10% of height,
+     and 40% width*/
+    height: 5vh;
+    width: 20vh;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 25px; /* This determines the rounded edges */
+    background-color: #00ff66;
 }
 
 #fc-logo {
+    width: 80vh;
     padding: 10vh 10vh;
-}
-
-#tournament-hub{
-    display: none;
 }
