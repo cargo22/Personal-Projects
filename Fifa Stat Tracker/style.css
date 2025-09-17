@@ -27,7 +27,7 @@ body {
     font-size: 35px;
 }
 
-/* Page layout is the same as the previous one.*/
+/* This is the screen that prompts the user to enter participant names.*/
 #contestants{
     height: 90vh; /* This means the div takes up 90% of the page, regardless of resizing.*/
     display: flex;
@@ -40,7 +40,7 @@ body {
     font-size: 35px;
 }
 
-/* Page layout is the same as the previous one.*/
+/* This is the screen that lists all matchups and prompts user to enter scores.*/
 #matches{
     height: 90vh; /* This means the div takes up 90% of the page, regardless of resizing.*/
     display: flex;
@@ -53,7 +53,7 @@ body {
     font-size: 35px;
 }
 
-/* Page layout is the same as the previous one.*/
+/* This is the screen that displays table results.*/
 #tournament-hub{
     height: 90vh; /* This means the div takes up 90% of the page, regardless of resizing.*/
     display: flex;
@@ -87,6 +87,7 @@ body {
     transform: scale(1.05);
 }
 
+/* Styling the button that confirms how many participants there are.*/
 #advance-button {
     /* Setting the dimensions of the button. height is 10% of height,
      and 40% width*/
@@ -107,6 +108,7 @@ body {
     transform: scale(1.05);
 }
 
+/* Styling the dropdown where user chooses how many players there are. */
 #num-players {
      /* Setting the dimensions of the dropdown. height is 10% of height,
      and 20% width*/
@@ -135,6 +137,7 @@ body {
     padding: 10px;
 }
 
+/* Styling the button that confirms the names of the participants. */
 #submit-names {
     /* Setting the dimensions of the button. height is 10% of height,
      and 40% width*/
@@ -149,6 +152,7 @@ body {
     margin: 70px;
 }
 
+/* Adding hover animations to the submit-names button*/
 #submit-names:hover {
     background-color: #00cc52;
     transform: scale(1.05);
@@ -157,4 +161,16 @@ body {
 #fc-logo {
     width: 80vh;
     padding: 10vh 10vh;
+}
+
+.game {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* spacing between elements */
+    margin-bottom: 10px;
+}
+
+.game input {
+    width: 50px; /* keeps inputs compact */
+    text-align: center;
 }

@@ -8,11 +8,13 @@
     <script src="script.js" charset="UTF-8" defer></script>
 </head>
 <body>
+<!--This is the initial screen the user will see upon entering the page-->
     <div id="start-screen">
         <img id="fc-logo" src="fc logo.png">
         <button id="start-button">Start Tournament</button>
     </div>
 
+    <!-- This is the screen that asks the user how many participants will play in the tournament. -->
     <div id="setup-screen" style="display: none;">
         <h2>Tournament Setup</h2>
         <label for="num-players"> Number of players:</label>
@@ -26,17 +28,20 @@
         <button id="advance-button">Advance</button>
     </div>
 
+    <!-- This is the screen that prompts the user to enter the names of the participants. -->
     <div id="contestants" style="display: none">
         <h1>Contestants</h1>
         <form id="namesForm"></form>
         <button id="submit-names">Submit</button>
     </div>
 
+    <!-- This is the screen that displays all possible matchups and prompts user to enter scores.-->
     <div id="matches" style="display: none;">
         <h2>Enter Game Results</h2>
         <button></button>
     </div>
 
+    <!-- This is the screen that shows the results in table format. -->
     <div id="tournament-hub" style="display: none">
         <h1>Tournament Hub</h1>
     </div>

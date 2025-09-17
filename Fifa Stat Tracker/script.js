@@ -67,9 +67,11 @@ names.addEventListener('click', (e) => {
         div.className = "game";
 
         div.innerHTML = `
-            <span>${match[0]} vs ${match[1]}</span>
-            <input type='number' min='0' class='score' id='score_${index}_1' placeholder="${match[0]} score">
-            <input type='number' min='0' class='score' id='score_${index}_2' placeholder="${match[1]} score">
+            <span>${match[0]}</span>
+            <input type='number' min='0' class='score' id='score_${index}_1' placeholder="score">
+            <span>vs</span>
+            <input type='number' min='0' class='score' id='score_${index}_2' placeholder="score">
+            <span>${match[1]}</span>
         `;
 
         results.appendChild(div);
