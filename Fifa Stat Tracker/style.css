@@ -81,7 +81,7 @@ body {
     transition: transform 0.9s, background-color 0.9s; /* This is for hover animations*/
 }
 
-/* This decides what to do once we hover. In this case, the button scales in size*/
+/* This decides what to do once we hover over the start button. In this case, the button scales in size*/
 #start-button:hover {
     background-color: #00cc52;
     transform: scale(1.05);
@@ -158,11 +158,13 @@ body {
     transform: scale(1.05);
 }
 
+/* Logo on the initial page. Sets dimensions*/
 #fc-logo {
     width: 80vh;
     padding: 10vh 10vh;
 }
 
+/* Where users input scores of the games*/
 .game {
     display: flex;
     align-items: center;
@@ -171,23 +173,26 @@ body {
     gap: 10px; /* space between items */
 }
 
+/* Names of the players of each game. */
 .player {
     font-weight: bold;
     min-width: 100px; /* keeps names aligned */
     text-align: center;
 }
 
+/* The input section where user indicates the score of the game.*/
 .score {
     width: 50px;
     text-align: center;
 }
 
+/* The 'vs' part that indicates the separate matchups between two competitors*/
 .vs {
     font-weight: bold;
     margin: 0 10px;
 }
 
-
+/* Where the user inputs scores. */
 .game input {
     width: 8vh; /* keeps inputs compact */
     height: 5vh;
@@ -196,6 +201,7 @@ body {
     background-color: #00ff66;
 }
 
+/* Button that leads to the final table result*/
 #results-button {
     /* Setting the dimensions of the button. height is 10% of height,
      and 40% width*/
@@ -210,6 +216,7 @@ body {
     margin: 70px;
 }
 
+/* Same hover animation as all other buttons*/
 #results-button:hover {
     background-color: #00cc52;
     transform: scale(1.05);
