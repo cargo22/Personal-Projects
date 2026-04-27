@@ -4,7 +4,7 @@
 
 from sqlalchemy import Column, Integer, String, Float, Date, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
-from backend.db_connection import Base
+from db_connection import Base
 
 class Team(Base):
     __tablename__ = "teams"                                    # the actual table name in PostgreSQL

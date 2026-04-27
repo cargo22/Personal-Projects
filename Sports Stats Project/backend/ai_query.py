@@ -72,7 +72,20 @@ def run_oracle_query(user_question: str) -> list[dict]:
         # the list comprehension does this for every row, building the final list
         return [dict(zip(columns, row)) for row in rows]
 
-
+# writing a function that will turn SQL result back into regular english
+def summarize_results(user_question: str, results: list[dict]) -> str:
+    response = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=150,
+        messages=[
+            {
+                "role": "user",
+                "content": f"Question: {user_question}\nData: {results}\n\nWrite in one clear, natural sentence that answers the question using the data. No markdown, no extra explanation."
+            }
+        ]
+    )
+    return response.content[0].text.strip()
+                      
 # quick test — only runs if you execute this file directly with: python ask_oracle.py
 if __name__ == "__main__":
     q = "Who scored the most points in a single game in the 2023-24 season?"

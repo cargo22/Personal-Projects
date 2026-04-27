@@ -3,9 +3,9 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import backend.db_tables as db_tables
-from backend.db_connection import engine
-from backend.ai_query import run_oracle_query
+import db_tables
+from db_connection import engine
+from ai_query import run_oracle_query, summarize_results
 
 # creates all database tables on startup if they don't already exist
 db_tables.Base.metadata.create_all(bind=engine)
@@ -36,6 +36,7 @@ def read_root():
 def ask(request: AskRequest):
     try:
         results = run_oracle_query(request.question)
-        return {"question": request.question, "results": results}
+        summarized_result = summarize_results(request.question, results)
+        return {"question": request.question, "summary": summarized_result, "results": results}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))  # returns error details if something breaks
