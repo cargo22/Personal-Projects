@@ -1,0 +1,42 @@
+/* ResultsTable.css — styles for the summary text and results table */
+
+/* natural language summary — large, bold, fades in */
+.summary {
+  font-size: 2.3rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* summary and table both fade in when they appear */
+.summary, table {
+  animation: fadeIn 0.4s ease;
+}
+
+/* full width table, no double borders */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* cell padding and bottom border */
+th, td {
+  text-align: left;
+  padding: 10px 14px;
+  border-bottom: 1px solid #222;
+  font-size: 0.95rem;
+}
+
+/* column headers — accent color, uppercase, spaced letters */
+th {
+  color: var(--accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+/* highlight row on hover */
+tr:hover td {
+  background-color: #111;
+}

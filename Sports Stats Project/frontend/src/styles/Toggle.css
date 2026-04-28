@@ -1,0 +1,34 @@
+/* Toggle.css — styles for the Past / Present / Future mode switcher */
+
+.toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  justify-content: center;
+}
+
+/* inactive toggle button — muted, no fill */
+.toggle button {
+  padding: 8px 24px;
+  border: 1px solid #333;
+  border-radius: 20px;
+  background: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+/* active toggle button — filled with accent color */
+.toggle button.active {
+  background-color: var(--accent) !important;
+  color: #0a0a0a !important;
+  border-color: var(--accent) !important;
+}
+
+.toggle button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: scale(1.05);
+  transition: all 0.2s ease;
+}
