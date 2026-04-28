@@ -1,3 +1,23 @@
+/* default color scheme for past side*/
+:root {
+  --bg: #0a1628;
+  --accent: #00d4ff;
+  --text: #f0f0f0;
+  --muted: #888;
+}
+
+/* changing accent color for present side */
+:root.present {
+  --bg: #0d0d1a;
+  --accent: #7c3aed;
+}
+
+/* future mode — dark green, neon green accent */
+:root.future {
+  --bg: #0a1a0a;
+  --accent: #00ff88;
+}
+
 /* resets default browser styles — every browser adds its own margins/padding by default, this clears them */
 * {
   box-sizing: border-box;
@@ -7,9 +27,10 @@
 
 /* global styles — dark background, light text, clean font */
 body {
-  background-color: #0a0a0a;
-  color: #f0f0f0;
+  background-color: var(--bg);
+  color: var(--text);
   font-family: 'Segoe UI', sans-serif;
+  transition: background-color 0.4s ease;
 }
 
 /* centers the content on the page and limits it to 900px wide */
@@ -60,7 +81,7 @@ h1 {
 
 /* subtle border highlight when the input is focused */
 .search-bar input:focus {
-  border-color: #555;
+  border-color: var(--accent);
 }
 
 /* the Ask button — purple, rounded */
@@ -69,14 +90,14 @@ h1 {
   font-size: 1rem;
   border: none;
   border-radius: 8px;
-  background-color: #7c3aed;
+  background-color: var(--accent);
   color: white;
   cursor: pointer;
 }
 
 /* darker purple on hover */
 .search-bar button:hover {
-  background-color: #6d28d9;
+  opacity: 0.65;
 }
 
 /* greyed out and not clickable while loading */
@@ -112,7 +133,6 @@ th, td {
 
 /* column headers — grey, uppercase, small, slightly spaced out letters */
 th {
-  color: #aaa;
   font-weight: 600;
   text-transform: uppercase;
   font-size: 0.75rem;
@@ -142,14 +162,23 @@ tr:hover td {
 }
 
 .toggle button.active {
-  background-color: #f0f0f0 !important;
+  background-color: var(--accent) !important;
   color: #0a0a0a !important;
-  border-color: #f0f0f0 !important;
+  border-color: var(--accent) !important;
 }
 
 .summary {
-  font-size: 1.2rem;
+  font-size: 2.3rem;
   font-weight: 600;
   margin-bottom: 24px;
   line-height: 1.5;
+}
+
+.summary, table {
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to  { opacity: 1; transform: translateY(0); }
 }
