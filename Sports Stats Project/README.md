@@ -101,10 +101,13 @@ The app will be running at `http://localhost:5173`.
 
 ## Data Pipeline
 
-The database is seeded from two sources:
+The database is seeded from the [NBA Dataset: Box Scores and Stats (1947 - Today)](https://www.kaggle.com/datasets/eoinamoore/historical-nba-data-and-player-box-scores) Kaggle dataset, updated daily.
 
-1. **Kaggle NBA dataset** (SQLite) — teams, players, games, and team box scores through 2022
-2. **nba_api** — live player box scores for 2020-21 through 2024-25
+Download the dataset and place these files in `backend/data/`:
+- `PlayerStatistics.csv`
+- `TeamStatistics.csv`
+- `Games.csv`
+- `Players.csv`
 
 To run the pipeline:
 
