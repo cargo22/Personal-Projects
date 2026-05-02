@@ -2,7 +2,7 @@
 # each class = one table, each attribute = one column
 # all classes inherit from Base so SQLAlchemy knows to treat them as tables
 
-from sqlalchemy import Column, Integer, String, Float, Date, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Date, Boolean, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from db_connection import Base
 
@@ -102,6 +102,8 @@ class PlayerBoxScore(Base):
     plus_minus = Column(Integer)
     days_rest = Column(Integer)
 
+    __table_args__ = (UniqueConstraint("player_id", "game_id", name="uq_player_game"),)
+
     player = relationship("Player", back_populates="box_scores")
     game = relationship("Game", back_populates="player_box_scores")
 
@@ -137,5 +139,7 @@ class TeamBoxScore(Base):
     largest_lead = Column(Integer, nullable=True)
     lead_changes = Column(Integer, nullable=True)
     times_tied = Column(Integer, nullable=True)
+
+    __table_args__ = (UniqueConstraint("team_id", "game_id", name="uq_team_game"),)
 
     game = relationship("Game", back_populates="team_box_scores")

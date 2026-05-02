@@ -2,6 +2,10 @@
 # loops through every active player and every target season, inserting stats into PostgreSQL
 # this is slow by design — we sleep between API calls to avoid getting blocked by the NBA
 
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
 import time
 from datetime import datetime
 
@@ -9,14 +13,14 @@ from datetime import datetime
 from nba_api.stats.endpoints import playergamelog
 
 # our PostgreSQL connection tools
-from backend.db_connection import SessionLocal, engine
-import backend.db_tables as db_tables
+from db_connection import SessionLocal, engine
+import db_tables
 
 # creates PostgreSQL tables if they don't exist — safe to run even if tables already exist
 db_tables.Base.metadata.create_all(bind=engine)
 
 # the seasons we want to fetch box scores for
-SEASONS_TO_FETCH = ["2021-22", "2022-23", "2023-24", "2024-25"]
+SEASONS_TO_FETCH = ["2010-11", "2011-12", "2012-13", "2013-14", "2014-15", "2015-16", "2016-17", "2017-18", "2018-19", "2019-20", "2020-21", "2021-22", "2022-23", "2023-24", "2024-25"]
 
 # browser-like headers to avoid getting blocked by the NBA API
 # without these, the NBA's servers reject requests that look like bots
@@ -52,28 +56,39 @@ def sync_player_box_scores():
     total_games = 0
     api_calls = 0
 
-    # only fetch box scores for active players
-    active_players = db.query(db_tables.Player).filter(
-        db_tables.Player.is_active == True
-    ).all()
-    active_players = [p if not isinstance(p, tuple) else p[0] for p in active_players]
+    all_players = db.query(db_tables.Player).all()
+    all_players = [p if not isinstance(p, tuple) else p[0] for p in all_players]
 
-    print(f"  Found {len(active_players)} active players.")
+    print(f"  Found {len(all_players)} players.")
 
-    for i, player in enumerate(active_players):
+    RECENT_SEASONS = {"2020-21", "2021-22", "2022-23", "2023-24", "2024-25"}
 
-        # check which seasons still need to be fetched for this player
+    for i, player in enumerate(all_players):
+
+        # retired players drafted before 2000 couldn't have played in 2010-11 — skip them entirely
+        if not player.is_active and (player.draft_year is None or player.draft_year < 2000):
+            continue
+
+        # retired players only get fetched for pre-2020 seasons from their draft year onwards
+        if player.is_active:
+            eligible_seasons = SEASONS_TO_FETCH
+        else:
+            eligible_seasons = [
+                s for s in SEASONS_TO_FETCH
+                if s not in RECENT_SEASONS and int(s[:4]) >= player.draft_year
+            ]
+
         seasons_needed = [
-            s for s in SEASONS_TO_FETCH
+            s for s in eligible_seasons
             if not player_already_synced(db, player, s)
         ]
 
         # skip this player entirely if all seasons are already in the database
         if not seasons_needed:
-            print(f"  [{i+1}/{len(active_players)}] {player.name} already synced, skipping...")
+            print(f"  [{i+1}/{len(all_players)}] {player.name} already synced, skipping...")
             continue
 
-        print(f"  [{i+1}/{len(active_players)}] {player.name} - fetching {seasons_needed}...")
+        print(f"  [{i+1}/{len(all_players)}] {player.name} - fetching {seasons_needed}...")
 
         for season in seasons_needed:
             try:

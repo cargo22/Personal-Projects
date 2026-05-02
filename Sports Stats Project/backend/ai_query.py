@@ -22,7 +22,7 @@ client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 SCHEMA_CONTEXT = """You are an expert NBA Data Analyst. You have a PostgreSQL database with these tables:
 
 - teams (id, name, abbreviation, nickname, city, conference, division)
-- players (id, name, position, is_active, team_id)
+- players (id, name, position, is_active, team_id, draft_year, draft_round, draft_number) — draft columns are NULL for undrafted players
 - games (id, date, season, home_team_id, away_team_id, home_score, away_score, is_playoffs)
 - player_box_scores (id, player_id, game_id, team_id, points, rebounds, assists, steals, blocks, turnovers, minutes_played, fgm, fga, fg3m, fg3a, ftm, fta, plus_minus)
 - team_box_scores (id, team_id, game_id, points, assists, rebounds, turnovers, fgm, fga, fg3m, fg3a, ftm, fta, offensive_rating, defensive_rating, pace)
@@ -30,9 +30,17 @@ SCHEMA_CONTEXT = """You are an expert NBA Data Analyst. You have a PostgreSQL da
 Rules:
 - Return ONLY the SQL query. No explanations, no markdown, no code blocks.
 - Always join player_box_scores with players on player_id to get player names.
+- Always join team_box_scores with teams on team_id to get team names.
 - Always join with games when filtering by season or date.
-- Season format is like '2023-24'.
-- Limit results to 10 rows unless the question asks for all or a specific number."""
+- Season format is like '2023-24'. Only use this format — never use numeric season IDs like '22015' or '12015'.
+- The current season is '2025-26'. When the user says "this season", "current season", or "this year", use '2025-26'.
+- Always filter to regular season only by default: WHERE g.season LIKE '____-__' AND g.is_playoffs = false. Only include playoffs if the user explicitly asks.
+- Limit results to 10 rows unless the question asks for all or a specific number.
+- For per-game averages, use AVG() on the relevant column in player_box_scores or team_box_scores.
+- For team scoring averages, use AVG(team_box_scores.points) grouped by team.
+- For player averages, use AVG() on player_box_scores columns grouped by player.
+- When asked about wins/losses, calculate from games table: count games where home_score > away_score for home wins.
+- Always round floating point results to 2 decimal places using ROUND(..., 2)."""
 
 # the output is list[dict] as the flow is:
 # PostgreSQL row -> Python dict -> JSON -> React
@@ -80,7 +88,7 @@ def summarize_results(user_question: str, results: list[dict]) -> str:
         messages=[
             {
                 "role": "user",
-                "content": f"Question: {user_question}\nData: {results}\n\nWrite in one clear, natural sentence that answers the question using the data. No markdown, no extra explanation."
+                "content": f"Question: {user_question}\nData: {results}\n\nThe data above is the complete answer. Write one clear, natural sentence summarizing all the results. Do not say the data 'only contains' anything. No markdown, no extra explanation."
             }
         ]
     )
