@@ -1,6 +1,7 @@
 // ResultsTable.jsx — displays the query results as a table
 // single responsibility: rendering whatever data the backend returns
 
+// given the results that the AI gave us, create a table that shows that result
 function ResultsTable({ results }) {
   if (!results || results.length === 0) return null
 
@@ -28,4 +29,5 @@ function ResultsTable({ results }) {
   )
 }
 
+// letting this table be imported from other files
 export default ResultsTable

@@ -4,13 +4,20 @@
 import { useState, useEffect } from "react"
 import { pastPlaceholders, presentPlaceholders, futurePlaceholders } from "../constants/placeholders"
 
+// this function just retrieves the list of placeholder questions depending on the mode we are on
 function getList(mode) {
-  if (mode === "present") return presentPlaceholders
-  if (mode === "future") return futurePlaceholders
+  if (mode === "present") {
+    return presentPlaceholders
+  }  
+  if (mode === "future") {
+    return futurePlaceholders
+  }
   return pastPlaceholders
 }
 
+// function that adds the typing effect
 export function useTypingPlaceholder(mode) {
+  // defining variables that show what index the question is on and which question specifically
   const [placeholderIndex, setPlaceholderIndex] = useState(0)
   const [displayedPlaceholder, setDisplayedPlaceholder] = useState("")
 
@@ -19,6 +26,7 @@ export function useTypingPlaceholder(mode) {
     const interval = setInterval(() => {
       setPlaceholderIndex((current) => {
         const list = getList(mode)
+        // updates the sentence currently displaying
         return current === list.length - 1 ? 0 : current + 1
       })
     }, 7000)
@@ -31,6 +39,7 @@ export function useTypingPlaceholder(mode) {
     setDisplayedPlaceholder("")
 
     let i = 0
+    // adding the typing effect
     const typing = setInterval(() => {
       if (i < currentPlaceholder.length) {
         setDisplayedPlaceholder(currentPlaceholder.slice(0, i + 1))

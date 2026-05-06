@@ -3,6 +3,7 @@
 
 import { useEffect } from "react"
 
+// changes the root label depending on the mode we are in
 export function useTheme(mode) {
   useEffect(() => {
     document.documentElement.classList.remove("present", "future")
