@@ -143,3 +143,13 @@ class TeamBoxScore(Base):
     __table_args__ = (UniqueConstraint("team_id", "game_id", name="uq_team_game"),)
 
     game = relationship("Game", back_populates="team_box_scores")
+
+class Award(Base):
+    __tablename__ = "awards"
+
+    id = Column(Integer, primary_key=True, index=True)
+    season = Column(String, index=True)     # format: '2005-06'
+    award = Column(String, index=True)      # e.g. 'nba mvp', 'nba roy', 'nba dpoy'
+    player_name = Column(String)
+    winner = Column(Boolean, default=False)
+    share = Column(Float, nullable=True)    # vote share 0-1
