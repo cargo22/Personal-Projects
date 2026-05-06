@@ -2,7 +2,8 @@
 
 I am creating a natural language NBA stats platform. Ask any question in plain English; the app uses Claude to generate SQL, queries a PostgreSQL database of real NBA data, and returns results alongside a one-sentence summary.
 
-![Past mode](<img width="952" height="866" alt="image" src="https://github.com/user-attachments/assets/7b809c05-14aa-43b0-b377-5c3a11023bfb" />)
+<img width="1903" height="870" alt="nba website" src="https://github.com/user-attachments/assets/ef097407-54c8-4e02-ae6e-f3acaa7c60bd" />
+
 
 ---
 
