@@ -1,8 +1,8 @@
 # Sports Oracle
 
-A natural language NBA stats platform. Ask any question in plain English — the app uses Claude to generate SQL, queries a PostgreSQL database of real NBA data, and returns results alongside a one-sentence summary.
+I am creating a natural language NBA stats platform. Ask any question in plain English; the app uses Claude to generate SQL, queries a PostgreSQL database of real NBA data, and returns results alongside a one-sentence summary.
 
-![Past mode](https://i.imgur.com/placeholder.png)
+![Past mode](<img width="952" height="866" alt="image" src="https://github.com/user-attachments/assets/7b809c05-14aa-43b0-b377-5c3a11023bfb" />)
 
 ---
 
@@ -11,7 +11,7 @@ A natural language NBA stats platform. Ask any question in plain English — the
 - **Natural language querying** — type a question like "Who averaged the most points in 2023-24?" and get a real answer
 - **AI-powered SQL generation** — Claude (Haiku) reads the database schema and writes the query
 - **Natural language summaries** — results are translated back into a plain English sentence
-- **Three-mode themes** — Past (blue), Present (purple), Future (green)
+- **Three-mode themes** — Past (blue), Present (purple), Future (green). The past and present functionally work the same, it just keeps data separated. The future will form predicative answers using ML.
 - **Animated placeholder** — rotating example questions with a typing animation
 
 ---
@@ -101,7 +101,7 @@ The app will be running at `http://localhost:5173`.
 
 ## Data Pipeline
 
-The database is seeded from the [NBA Dataset: Box Scores and Stats (1947 - Today)](https://www.kaggle.com/datasets/eoinamoore/historical-nba-data-and-player-box-scores) Kaggle dataset, updated daily.
+The database is seeded from the [NBA Dataset: Box Scores and Stats (1947 - Today)](https://www.kaggle.com/datasets/eoinamoore/historical-nba-data-and-player-box-scores) Kaggle dataset, updated daily. I am using the Kaggle API to constantly pull updates made to the dataset.
 
 Download the dataset and place these files in `backend/data/`:
 - `PlayerStatistics.csv`
