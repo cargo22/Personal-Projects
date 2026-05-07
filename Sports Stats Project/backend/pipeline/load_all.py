@@ -11,16 +11,19 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..")) # this line te
 from pipeline.load_games import load_games
 from pipeline.load_players import load_players
 from pipeline.load_player_box_scores import load_player_box_scores
+from pipeline.load_player_box_scores_extended import load_player_box_scores_extended
 from pipeline.load_team_box_scores import load_team_box_scores
+from pipeline.load_team_box_scores_extended import load_team_box_scores_extended
 from pipeline.load_awards import load_awards
 
 # run this code if this file is being executed
 if __name__ == "__main__":
     print("Starting full CSV load...")
-    # calling the functions to actually load data
     load_games()
     load_players()
     load_player_box_scores()
+    load_player_box_scores_extended()
     load_team_box_scores()
+    load_team_box_scores_extended()
     load_awards()
     print("\nDone.")

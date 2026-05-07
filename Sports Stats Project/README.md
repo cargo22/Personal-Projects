@@ -25,7 +25,7 @@ I am creating a natural language NBA stats platform. Ask any question in plain E
 | Backend | FastAPI, SQLAlchemy, Python |
 | Database | PostgreSQL (Docker) |
 | AI | Anthropic Claude (Haiku) |
-| Data Pipeline | nba_api, Kaggle SQLite dataset |
+| Data Pipeline | Kaggle CSV dataset, pandas |
 
 ---
 
@@ -38,9 +38,15 @@ Sports Stats Project/
 │   ├── ai_query.py            # Claude SQL generation + summarization
 │   ├── db_tables.py           # SQLAlchemy table definitions
 │   ├── db_connection.py       # PostgreSQL engine + session
+│   ├── data/                  # Kaggle CSV files (not committed)
 │   ├── pipeline/
-│   │   ├── load_initial_data.py       # One-time Kaggle → PostgreSQL seed
-│   │   └── fetch_player_box_scores.py # NBA API player stats pipeline
+│   │   ├── utils.py                     # Shared helpers (get_season, pad_game_id)
+│   │   ├── load_all.py                  # Runs all loaders in order
+│   │   ├── load_games.py                # Loads Games.csv
+│   │   ├── load_players.py              # Loads Players.csv
+│   │   ├── load_player_box_scores.py    # Loads PlayerStatistics.csv
+│   │   ├── load_team_box_scores.py      # Loads TeamStatistics.csv
+│   │   └── load_awards.py               # Loads Player Award Shares.csv
 │   ├── Dockerfile
 │   └── requirements.txt
 ├── frontend/
@@ -110,13 +116,18 @@ Download the dataset and place these files in `backend/data/`:
 - `Games.csv`
 - `Players.csv`
 
-To run the pipeline:
+To run the full pipeline:
 
 ```bash
-docker exec sports_backend python pipeline/fetch_player_box_scores.py
+docker exec sports_backend python pipeline/load_all.py
 ```
 
-The script is resumable — it skips any player/season combination already in the database.
+To reload individual tables (e.g. mid-season updates):
+
+```bash
+docker exec sports_backend python pipeline/load_games.py
+docker exec sports_backend python pipeline/load_player_box_scores.py
+```
 
 ---
 

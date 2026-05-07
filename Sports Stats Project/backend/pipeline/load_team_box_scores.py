@@ -21,7 +21,7 @@ def load_team_box_scores():
     team_map = {t.nba_team_id: t.id for t in db.query(db_tables.Team).all()}
 
     total = 0
-    # read csv in chunks
+    # basic file covers full history — extended stats (ortg, drtg, pace) are loaded separately
     for chunk in pd.read_csv(os.path.join(DATA_DIR, "TeamStatistics.csv"), chunksize=CHUNK_SIZE, low_memory=False):
         rows_to_insert = []
 

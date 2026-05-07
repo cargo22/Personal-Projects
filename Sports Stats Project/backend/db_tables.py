@@ -98,9 +98,17 @@ class PlayerBoxScore(Base):
 
     # advanced stats
     true_shooting_pct = Column(Float)
+    effective_fg_pct = Column(Float)
     usage_rate = Column(Float)
     plus_minus = Column(Integer)
-    days_rest = Column(Integer)
+    offensive_rating = Column(Float)
+    defensive_rating = Column(Float)
+    net_rating = Column(Float)
+    assist_pct = Column(Float)
+    rebound_pct = Column(Float)
+    player_impact_estimate = Column(Float)
+    double_double = Column(Boolean, nullable=True)
+    triple_double = Column(Boolean, nullable=True)
 
     __table_args__ = (UniqueConstraint("player_id", "game_id", name="uq_player_game"),)
 

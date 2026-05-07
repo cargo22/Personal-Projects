@@ -22,7 +22,7 @@ def load_player_box_scores():
     team_map = {t.nba_team_id: t.id for t in db.query(db_tables.Team).all()}
 
     total = 0
-    # read csv chunks at a time since the csv is EXTREMELY large
+    # basic file covers full history since 1947 — extended stats are loaded separately
     for chunk in pd.read_csv(os.path.join(DATA_DIR, "PlayerStatistics.csv"), chunksize=CHUNK_SIZE, low_memory=False):
         rows_to_insert = []
 

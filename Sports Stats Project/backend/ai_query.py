@@ -24,7 +24,7 @@ SCHEMA_CONTEXT = """You are an expert NBA Data Analyst. You have a PostgreSQL da
 - teams (id, name, abbreviation, nickname, city, conference, division)
 - players (id, name, position, is_active, team_id, draft_year, draft_round, draft_number) — draft columns are NULL for undrafted players
 - games (id, date, season, home_team_id, away_team_id, home_score, away_score, is_playoffs)
-- player_box_scores (id, player_id, game_id, team_id, points, rebounds, assists, steals, blocks, turnovers, minutes_played, fgm, fga, fg3m, fg3a, ftm, fta, plus_minus)
+- player_box_scores (id, player_id, game_id, team_id, points, rebounds, assists, steals, blocks, turnovers, minutes_played, fgm, fga, fg3m, fg3a, ftm, fta, plus_minus, true_shooting_pct, effective_fg_pct, usage_rate, offensive_rating, defensive_rating, net_rating, assist_pct, rebound_pct, player_impact_estimate, double_double, triple_double)
 - team_box_scores (id, team_id, game_id, points, assists, rebounds, turnovers, fgm, fga, fg3m, fg3a, ftm, fta, offensive_rating, defensive_rating, pace)
 - awards (id, season, award, player_name, winner, share) — award values: 'nba mvp', 'nba roy', 'nba dpoy', 'nba smoy', 'nba mip'. winner=true means they won. Use player_name directly, no join needed.
 
@@ -43,7 +43,7 @@ Rules:
 - When asked about wins/losses, calculate from games table: count games where home_score > away_score for home wins.
 - To find a championship winner for a season, find the last playoff game of that season (MAX(date) WHERE is_playoffs = true AND season = '...') and determine who won it (home_score > away_score means home team won).
 - To count championships for a team across all seasons, use a subquery or CTE that finds the winner of the last playoff game for each season, then count how many times that team appears.
-- Always round floating point results to 2 decimal places using ROUND(..., 2)."""
+- Always round floating point results to 2 decimal places using ROUND(value::numeric, 2)."""
 
 # the output is list[dict] as the flow is:
 # PostgreSQL row -> Python dict -> JSON -> React
@@ -82,6 +82,11 @@ def run_oracle_query(user_question: str) -> list[dict]:
     # step 2 — extract the SQL string from Claude's response
     # response.content is a list of blocks — [0] grabs the first one, .text gets the string, .strip() removes whitespace
     sql = response.content[0].text.strip()
+    if sql.startswith("```"):
+        sql = sql.split("\n", 1)[1]
+    if sql.endswith("```"):
+        sql = sql.rsplit("```", 1)[0]
+    sql = sql.strip()
 
     # step 3 — run the SQL on PostgreSQL
     # "with" ensures the connection is always closed when done, even if something crashes
