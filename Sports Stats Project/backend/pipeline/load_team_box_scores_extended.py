@@ -44,19 +44,20 @@ def load_team_box_scores_extended():
             })
 
         if rows_to_update:
-            db.execute(
+            result = db.execute(
                 text("""
                     UPDATE team_box_scores SET
                         offensive_rating = :offensive_rating,
                         defensive_rating = :defensive_rating,
                         pace = :pace
-                    WHERE team_id = :team_id AND game_id = :game_id
+                    WHERE team_id = :team_id AND game_id = :game_id AND offensive_rating IS NULL
                 """),
                 rows_to_update
             )
             db.commit()
-            total += len(rows_to_update)
-            print(f"  {total} team box scores updated...")
+            total += result.rowcount
+            if result.rowcount > 0:
+                print(f"  {total} team box scores updated...")
 
     print(f"Team box scores extended total: {total}")
     db.close()

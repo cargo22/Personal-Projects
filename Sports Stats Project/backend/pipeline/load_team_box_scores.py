@@ -61,7 +61,7 @@ def load_team_box_scores():
 
         # add to db only if there are actually any rows to insert for this chunk
         if rows_to_insert:
-            db.execute(
+            result = db.execute(
                 text("""
                     INSERT INTO team_box_scores
                     (team_id, game_id, points, rebounds, assists, turnovers, fgm, fga, fg3m, fg3a,
@@ -75,8 +75,9 @@ def load_team_box_scores():
 
             # save changes
             db.commit()
-            total += len(rows_to_insert)
-            print(f"  {total} team box scores inserted...")
+            total += result.rowcount
+            if result.rowcount > 0:
+                print(f"  {total} team box scores inserted...")
 
     print(f"Team box scores total: {total}")
     db.close()

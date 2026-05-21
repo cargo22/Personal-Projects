@@ -52,7 +52,7 @@ def load_player_box_scores_extended():
             })
 
         if rows_to_update:
-            db.execute(
+            result = db.execute(
                 text("""
                     UPDATE player_box_scores SET
                         true_shooting_pct = :true_shooting_pct,
@@ -66,13 +66,14 @@ def load_player_box_scores_extended():
                         player_impact_estimate = :player_impact_estimate,
                         double_double = :double_double,
                         triple_double = :triple_double
-                    WHERE player_id = :player_id AND game_id = :game_id
+                    WHERE player_id = :player_id AND game_id = :game_id AND true_shooting_pct IS NULL
                 """),
                 rows_to_update
             )
             db.commit()
-            total += len(rows_to_update)
-            print(f"  {total} player box scores updated...")
+            total += result.rowcount
+            if result.rowcount > 0:
+                print(f"  {total} player box scores updated...")
 
     print(f"Player box scores extended total: {total}")
     db.close()

@@ -84,36 +84,23 @@ def load_player_box_scores():
 
         # only insert if there is something to insert
         if rows_to_insert:
-            db.execute(
+            result = db.execute(
                 text("""
                     INSERT INTO player_box_scores
                     (player_id, game_id, team_id, points, rebounds, assists, steals, blocks,
                      turnovers, personal_fouls, minutes_played, fgm, fga, fg3m, fg3a, ftm, fta, plus_minus)
                     VALUES (:player_id, :game_id, :team_id, :points, :rebounds, :assists, :steals, :blocks,
                             :turnovers, :personal_fouls, :minutes_played, :fgm, :fga, :fg3m, :fg3a, :ftm, :fta, :plus_minus)
-                    ON CONFLICT (player_id, game_id) DO UPDATE SET
-                        minutes_played = EXCLUDED.minutes_played,
-                        points = EXCLUDED.points,
-                        rebounds = EXCLUDED.rebounds,
-                        assists = EXCLUDED.assists,
-                        steals = EXCLUDED.steals,
-                        blocks = EXCLUDED.blocks,
-                        turnovers = EXCLUDED.turnovers,
-                        fgm = EXCLUDED.fgm,
-                        fga = EXCLUDED.fga,
-                        fg3m = EXCLUDED.fg3m,
-                        fg3a = EXCLUDED.fg3a,
-                        ftm = EXCLUDED.ftm,
-                        fta = EXCLUDED.fta,
-                        plus_minus = EXCLUDED.plus_minus
+                    ON CONFLICT (player_id, game_id) DO NOTHING
                 """),
                 rows_to_insert
             )
 
             # save changes
             db.commit()
-            total += len(rows_to_insert)
-            print(f"  {total} player box scores inserted...")
+            total += result.rowcount
+            if result.rowcount > 0:
+                print(f"  {total} player box scores inserted...")
 
     # we are done with all inserts
     print(f"Player box scores total: {total}")
