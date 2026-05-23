@@ -35,20 +35,27 @@ Rules:
 - Always join with games when filtering by season or date.
 - Season format is like '2023-24'. Only use this format — never use numeric season IDs like '22015' or '12015'.
 - The current season is '2025-26'. When the user says "this season", "current season", or "this year", use '2025-26'.
-- Always filter to regular season only by default: WHERE g.season LIKE '____-__' AND g.is_playoffs = false. This applies to career stats too — "career" means regular season only unless the user says "including playoffs" or "postseason".
+- ALWAYS include g.is_playoffs = false in every query unless the user explicitly asks about playoffs or postseason. This applies to game counts, player stats, team stats, records, and career totals. Never omit this filter for regular season questions.
 - Limit results to 10 rows unless the question asks for all or a specific number.
 - For per-game averages, use AVG() on the relevant column in player_box_scores or team_box_scores.
 - For team scoring averages, use AVG(team_box_scores.points) grouped by team.
 - For player averages, use AVG() on player_box_scores columns grouped by player.
-- When asked about wins/losses, calculate from games table: count games where home_score > away_score for home wins.
-- To find a championship winner for a season, find the last playoff game of that season (MAX(date) WHERE is_playoffs = true AND season = '...') and determine who won it (home_score > away_score means home team won).
+- For plus-minus leaderboards, use SUM(plus_minus) for total plus-minus — not AVG. Always require HAVING COUNT(*) >= 20 for a full season or >= 5 for playoffs to filter small samples.
+- For any per-game stat leaderboard (PPG, RPG, APG, etc.), always require HAVING COUNT(*) >= 20 for a full season or >= 5 for playoffs to filter out players with very few games.
+- When asked about a team's wins/losses, calculate from games table using both home and away games: wins = COUNT(*) WHERE (home_team_id = team AND home_score > away_score) OR (away_team_id = team AND away_score > home_score). Losses = COUNT(*) WHERE (home_team_id = team AND home_score < away_score) OR (away_team_id = team AND away_score < home_score). Always filter to is_playoffs = false for regular season records.
+- To find a championship winner for a season, find the last playoff game of that season (MAX(date) WHERE is_playoffs = true AND season = '...' AND nba_game_id NOT LIKE '0062%') and determine who won it (home_score > away_score means home team won).
+- To find the in-season tournament (NBA Cup) winner for a season, find the game WHERE nba_game_id LIKE '0062%' AND season = '...', then determine who won it (home_score > away_score means home team won). Join with teams to get the team name.
 - To count championships for a team across all seasons, use a subquery or CTE that finds the winner of the last playoff game for each season, then count how many times that team appears.
 - Always round floating point results to 2 decimal places using ROUND(value::numeric, 2)."""
 
 # the output is list[dict] as the flow is:
 # PostgreSQL row -> Python dict -> JSON -> React
-def run_oracle_query(user_question: str) -> list[dict]:
+def run_oracle_query(user_question: str, mode: str = "past") -> list[dict]:
     # expects a string (the user's question), returns a list of dictionaries (the results)
+
+    # in Present mode, force all queries to the current season unless the user says otherwise
+    if mode == "present":
+        user_question = f"[Current season 2025-26 — always filter to this season unless the user specifies a different one] {user_question}"
 
     # step 1 — send the question to Claude with the schema context
     # retries up to 3 times with a short wait between attempts to handle API timeouts

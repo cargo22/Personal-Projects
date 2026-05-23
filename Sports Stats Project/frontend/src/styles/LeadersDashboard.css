@@ -1,0 +1,110 @@
+.leaders-dashboard {
+  margin-top: 32px;
+  animation: fadeIn 0.4s ease;
+}
+
+.leaders-season {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+}
+
+.leaders-tabs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.leaders-tabs button {
+  padding: 8px 24px;
+  border-radius: 20px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.leaders-tabs button.active,
+.leaders-tabs button:hover {
+  background: var(--accent);
+  color: #000;
+  font-weight: 600;
+}
+
+.leaders-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.leaders-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.leaders-card h3 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.leaders-card table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.leaders-card th {
+  color: var(--muted);
+  font-weight: 600;
+  text-align: left;
+  padding: 4px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.78rem;
+}
+
+.leaders-card td {
+  padding: 7px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.leaders-card tr:last-child td {
+  border-bottom: none;
+}
+
+.leaders-card td.rank {
+  color: var(--muted);
+  width: 20px;
+}
+
+.leaders-card td.stat-value {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.leaders-card td.gp {
+  color: var(--muted);
+  text-align: right;
+}
+
+.leaders-loading {
+  color: var(--muted);
+  text-align: center;
+  margin-top: 32px;
+}
+
+@media (max-width: 640px) {
+  .leaders-grid {
+    grid-template-columns: 1fr;
+  }
+}

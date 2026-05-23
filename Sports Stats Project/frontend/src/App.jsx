@@ -7,6 +7,7 @@ import "./App.css"
 import Toggle from "./components/Toggle"
 import SearchBar from "./components/SearchBar"
 import ResultsTable from "./components/ResultsTable"
+import LeadersDashboard from "./components/LeadersDashboard"
 
 import { useTheme } from "./hooks/useTheme"
 import { useTypingPlaceholder } from "./hooks/useTypingPlaceholder"
@@ -19,6 +20,14 @@ function App() {
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+
+  function handleModeChange(newMode) {
+    setMode(newMode)
+    setQuestion("")
+    setSummary(null)
+    setResults(null)
+    setError(null)
+  }
 
   // applies the correct CSS theme class when mode changes
   useTheme(mode)
@@ -35,7 +44,7 @@ function App() {
     setResults(null)
 
     try {
-      const data = await askOracle(question)
+      const data = await askOracle(question, mode)
       setSummary(data.summary)
       setResults(data.results)
     } catch {
@@ -57,7 +66,7 @@ function App() {
   return (
     <div className="container">
       <div className="hero">
-        <Toggle mode={mode} onModeChange={setMode} />
+        <Toggle mode={mode} onModeChange={handleModeChange} />
         <h1>Sports Oracle</h1>
         <p className="subtitle">{subtitle}</p>
         <SearchBar
@@ -74,6 +83,7 @@ function App() {
       {results && results.length === 0 && <p className="no-results">No results found.</p>}
       {summary && <p className="summary">{summary}</p>}
       <ResultsTable results={results} />
+      {mode === "present" && !results && !loading && <LeadersDashboard />}
     </div>
   )
 }
