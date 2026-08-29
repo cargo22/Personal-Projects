@@ -60,30 +60,37 @@ function App() {
 
   const subtitle =
     mode === "past" ? "Ask anything about NBA history" :
-    mode === "present" ? "Ask anything about the current season" :
+    mode === "present" ? "2025-26 Season Stats Hub" :
     "Ask for predictions and forecasts"
 
+  // changing page depending on toggle (no search bar for present mode)
   return (
     <div className="container">
       <div className="hero">
         <Toggle mode={mode} onModeChange={handleModeChange} />
         <h1>Sports Oracle</h1>
         <p className="subtitle">{subtitle}</p>
-        <SearchBar
-          question={question}
-          onQuestionChange={setQuestion}
-          onAsk={handleAsk}
-          onKeyDown={handleKeyDown}
-          loading={loading}
-          placeholder={placeholder}
-        />
+        {mode !== "present" && (
+          <SearchBar
+            question={question}
+            onQuestionChange={setQuestion}
+            onAsk={handleAsk}
+            onKeyDown={handleKeyDown}
+            loading={loading}
+            placeholder={placeholder}
+          />
+        )}
       </div>
 
-      {error && <p className="error">{error}</p>}
-      {results && results.length === 0 && <p className="no-results">No results found.</p>}
-      {summary && <p className="summary">{summary}</p>}
-      <ResultsTable results={results} />
-      {mode === "present" && !results && !loading && <LeadersDashboard />}
+      {mode === "present" && <LeadersDashboard />}
+      {mode !== "present" && (
+        <>
+          {error && <p className="error">{error}</p>}
+          {results && results.length === 0 && <p className="no-results">No results found.</p>}
+          {summary && <p className="summary">{summary}</p>}
+          <ResultsTable results={results} />
+        </>
+      )}
     </div>
   )
 }

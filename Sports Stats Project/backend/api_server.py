@@ -43,39 +43,96 @@ def ask(request: AskRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# stat column lookup — controls what goes into the SQL query
-STAT_COLS = {"ppg": "points", "rpg": "rebounds", "apg": "assists"}
-
-# returns current season leaders for regular season and playoffs
+# returns current season leaders for regular season and playoffs for 'present' mode
 @app.get("/api/leaders")
 def get_leaders():
     try:
         with engine.connect() as conn:
-            def fetch(is_playoffs, stat_key, min_games):
-                col = STAT_COLS[stat_key]
-                rows = conn.execute(text(f"""
-                    SELECT p.name, ROUND(AVG(pbs.{col})::numeric, 1) AS value, COUNT(*) AS gp
+            # function that returns top 10 players, sorting by ppg and displaying ppg, rpg, and apg
+            def fetch_players(is_playoffs, min_games):
+                rows = conn.execute(text("""
+                    SELECT
+                        p.name,
+                        ROUND(AVG(pbs.points)::numeric, 1)   AS ppg,
+                        ROUND(AVG(pbs.rebounds)::numeric, 1) AS rpg,
+                        ROUND(AVG(pbs.assists)::numeric, 1)  AS apg,
+                        COUNT(*) AS gp
                     FROM player_box_scores pbs
                     JOIN players p ON p.id = pbs.player_id
-                    JOIN games g ON g.id = pbs.game_id
-                    WHERE g.season = '2025-26' AND g.is_playoffs = :playoffs AND pbs.{col} IS NOT NULL
+                    JOIN games g   ON g.id = pbs.game_id
+                    WHERE g.season = '2025-26' AND g.is_playoffs = :playoffs
+                      AND g.nba_game_id NOT LIKE '0062%'
                     GROUP BY p.name
                     HAVING COUNT(*) >= :min_games
-                    ORDER BY value DESC
-                    LIMIT 5
+                    ORDER BY ppg DESC
+                    LIMIT 10
                 """), {"playoffs": is_playoffs, "min_games": min_games}).fetchall()
-                return [{"name": r[0], "value": float(r[1]), "gp": r[2]} for r in rows]
+                return [{"name": r[0], "ppg": float(r[1]), "rpg": float(r[2]),
+                         "apg": float(r[3]), "gp": r[4]} for r in rows]
 
+            # new addition: we will also be displaying team 
+            def fetch_team_record(is_playoffs):
+                rows = conn.execute(text("""
+                    SELECT
+                        t.name,
+                        COUNT(CASE WHEN (g.home_team_id = t.id AND g.home_score > g.away_score)
+                                     OR (g.away_team_id = t.id AND g.away_score > g.home_score)
+                                   THEN 1 END) AS wins,
+                        COUNT(CASE WHEN (g.home_team_id = t.id AND g.home_score < g.away_score)
+                                     OR (g.away_team_id = t.id AND g.away_score < g.home_score)
+                                   THEN 1 END) AS losses,
+                        ROUND(
+                            COUNT(CASE WHEN (g.home_team_id = t.id AND g.home_score > g.away_score)
+                                         OR (g.away_team_id = t.id AND g.away_score > g.home_score)
+                                       THEN 1 END)::numeric / NULLIF(COUNT(*), 0), 3
+                        ) AS win_pct
+                    FROM teams t
+                    JOIN games g ON (g.home_team_id = t.id OR g.away_team_id = t.id)
+                    WHERE g.season = '2025-26' AND g.is_playoffs = :playoffs
+                      AND g.home_score IS NOT NULL
+                      AND g.nba_game_id NOT LIKE '0062%'
+                    GROUP BY t.name
+                    ORDER BY wins DESC
+                    LIMIT 10
+                """), {"playoffs": is_playoffs}).fetchall()
+                return [{"name": r[0], "wins": r[1], "losses": r[2],
+                         "win_pct": float(r[3]) if r[3] else 0.0} for r in rows]
+
+            # fetching more team stats
+            def fetch_team_stats(is_playoffs, min_games):
+                rows = conn.execute(text("""
+                    SELECT
+                        t.name,
+                        ROUND(AVG(tbs.points)::numeric, 1)            AS ppg,
+                        ROUND(AVG(tbs.offensive_rating)::numeric, 1)  AS ortg,
+                        ROUND(AVG(tbs.defensive_rating)::numeric, 1)  AS drtg,
+                        ROUND(AVG(tbs.pace)::numeric, 1)              AS pace,
+                        COUNT(*) AS gp
+                    FROM team_box_scores tbs
+                    JOIN teams t ON t.id = tbs.team_id
+                    JOIN games g  ON g.id = tbs.game_id
+                    WHERE g.season = '2025-26' AND g.is_playoffs = :playoffs
+                      AND tbs.offensive_rating IS NOT NULL
+                      AND g.nba_game_id NOT LIKE '0062%'
+                    GROUP BY t.name
+                    HAVING COUNT(*) >= :min_games
+                    ORDER BY ppg DESC
+                    LIMIT 10
+                """), {"playoffs": is_playoffs, "min_games": min_games}).fetchall()
+                return [{"name": r[0], "ppg": float(r[1]), "ortg": float(r[2]),
+                         "drtg": float(r[3]), "pace": float(r[4]), "gp": r[5]} for r in rows]
+
+            # defining what we return depending on whether we display regular season or playoff stats
             return {
                 "regular": {
-                    "ppg": fetch(False, "ppg", 20),
-                    "rpg": fetch(False, "rpg", 20),
-                    "apg": fetch(False, "apg", 20),
+                    "players":     fetch_players(False, 20),
+                    "teams_record": fetch_team_record(False),
+                    "teams_stats":  fetch_team_stats(False, 20),
                 },
                 "playoffs": {
-                    "ppg": fetch(True, "ppg", 5),
-                    "rpg": fetch(True, "rpg", 5),
-                    "apg": fetch(True, "apg", 5),
+                    "players":     fetch_players(True, 5),
+                    "teams_record": fetch_team_record(True),
+                    "teams_stats":  fetch_team_stats(True, 5),
                 }
             }
     except Exception as e:

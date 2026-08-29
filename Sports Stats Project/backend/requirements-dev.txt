@@ -1,0 +1,3 @@
+# development-only dependencies — testing tools that should NOT ship to production
+pytest
+httpx
