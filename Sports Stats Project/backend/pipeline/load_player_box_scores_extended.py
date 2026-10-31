@@ -10,8 +10,6 @@ from pipeline.utils import DATA_DIR, CHUNK_SIZE, pad_game_id
 
 # covers games since 1996 when NBA.com started tracking advanced stats
 # runs as a second pass after load_player_box_scores.py to fill in advanced columns
-
-
 def load_player_box_scores_extended():
     print("\n--- Loading Player Box Scores (Extended) ---")
     db = SessionLocal()
