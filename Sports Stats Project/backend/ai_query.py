@@ -6,6 +6,8 @@ from sqlalchemy import create_engine, text
 import anthropic
 from dotenv import load_dotenv
 
+from pipeline.utils import CURRENT_SEASON
+
 # loads variables from .env into memory so os.getenv() can access them
 load_dotenv()
 
@@ -19,7 +21,7 @@ client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 # the system prompt — tells Claude what our database looks like and how to write SQL for it
 # cached with ephemeral so Anthropic stores it temporarily, reducing cost on repeated requests
-SCHEMA_CONTEXT = """You are an expert NBA Data Analyst. You have a PostgreSQL database with these tables:
+SCHEMA_CONTEXT = f"""You are an expert NBA Data Analyst. You have a PostgreSQL database with these tables:
 
 - teams (id, name, abbreviation, nickname, city, conference, division)
 - players (id, name, position, is_active, team_id, draft_year, draft_round, draft_number) — draft columns are NULL for undrafted players
@@ -34,14 +36,16 @@ Rules:
 - Always join team_box_scores with teams on team_id to get team names.
 - Always join with games when filtering by season or date.
 - Season format is like '2023-24'. Only use this format — never use numeric season IDs like '22015' or '12015'.
-- The current season is '2025-26'. When the user says "this season", "current season", or "this year", use '2025-26'.
+- The current season is {CURRENT_SEASON}. When the user says "this season", "current season", or "this year", use {CURRENT_SEASON}.
 - ALWAYS include g.is_playoffs = false in every query unless the user explicitly asks about playoffs or postseason. This applies to game counts, player stats, team stats, records, and career totals. Never omit this filter for regular season questions.
 - Limit results to 10 rows unless the question asks for all or a specific number.
 - For per-game averages, use AVG() on the relevant column in player_box_scores or team_box_scores.
 - For team scoring averages, use AVG(team_box_scores.points) grouped by team.
 - For player averages, use AVG() on player_box_scores columns grouped by player.
-- For plus-minus leaderboards, use SUM(plus_minus) for total plus-minus — not AVG. Always require HAVING COUNT(*) >= 20 for a full season or >= 5 for playoffs to filter small samples.
-- For any per-game stat leaderboard (PPG, RPG, APG, etc.), always require HAVING COUNT(*) >= 20 for a full season or >= 5 for playoffs to filter out players with very few games.
+- For plus-minus leaderboards, use SUM(plus_minus) for total plus-minus — not AVG.
+- For any leaderboard-style question (PPG, RPG, APG, plus-minus, etc.), always filter out small-sample players using HAVING COUNT(*) >= <threshold> — never put this condition in WHERE, since WHERE runs before aggregation exists; it must be HAVING.
+  The <threshold> is 70 percent (rounded down) of the most games any single team has played this season so far — NOT the total number of games played league-wide (that would be ~15x too large, since 30 teams each play their own games). Compute it with this exact subquery pattern, substituting the real season string:
+  (SELECT FLOOR(0.7 * MAX(gp)) FROM (SELECT COUNT(*) AS gp FROM teams t JOIN games g ON (g.home_team_id = t.id OR g.away_team_id = t.id) WHERE g.season = '<season>' AND g.is_playoffs = false GROUP BY t.id) team_games)
 - When asked about a team's wins/losses, calculate from games table using both home and away games: wins = COUNT(*) WHERE (home_team_id = team AND home_score > away_score) OR (away_team_id = team AND away_score > home_score). Losses = COUNT(*) WHERE (home_team_id = team AND home_score < away_score) OR (away_team_id = team AND away_score < home_score). Always filter to is_playoffs = false for regular season records.
 - To find a championship winner for a season, find the last playoff game of that season (MAX(date) WHERE is_playoffs = true AND season = '...' AND nba_game_id NOT LIKE '0062%') and determine who won it (home_score > away_score means home team won).
 - To find the in-season tournament (NBA Cup) winner for a season, find the game WHERE nba_game_id LIKE '0062%' AND season = '...', then determine who won it (home_score > away_score means home team won). Join with teams to get the team name.
@@ -55,7 +59,7 @@ def run_oracle_query(user_question: str, mode: str = "past") -> list[dict]:
 
     # in Present mode, force all queries to the current season unless the user says otherwise
     if mode == "present":
-        user_question = f"[Current season 2025-26 — always filter to this season unless the user specifies a different one] {user_question}"
+        user_question = f"[Current season {CURRENT_SEASON} — always filter to this season unless the user specifies a different one] {user_question}"
 
     # step 1 — send the question to Claude with the schema context
     # retries up to 3 times with a short wait between attempts to handle API timeouts

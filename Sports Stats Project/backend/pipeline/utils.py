@@ -12,6 +12,12 @@ SKIP_GAME_TYPES = {"Preseason", "All-Star Game"}
 # group stage games are duplicated as "Regular Season" in the CSV so they load correctly
 CUP_GAME_TYPES = {"NBA Cup", "Emirates NBA Cup", "NBA Emirates Cup"}
 
+# defining a variable that notes the current season so that we do not have to manually change every instance it appears in the backend
+CURRENT_SEASON = "2026-27"
+
+# creating a data cutoff so that loading the database doesn't take so long on each run
+RECENT_DATA_CUTOFF = "2025-10-01"
+
 # helper function to get season depending on date
 def get_season(date):
     year = date.year if date.month >= 10 else date.year - 1

@@ -6,11 +6,11 @@ import pandas as pd
 from sqlalchemy import text
 from db_connection import SessionLocal, engine
 import db_tables
-from pipeline.utils import DATA_DIR, CHUNK_SIZE, pad_game_id
+from pipeline.utils import DATA_DIR, CHUNK_SIZE, pad_game_id, RECENT_DATA_CUTOFF
 
 # covers games since 1996 when NBA.com started tracking advanced stats
 # runs as a second pass after load_player_box_scores.py to fill in advanced columns
-def load_player_box_scores_extended():
+def load_player_box_scores_extended(recent_only=False):
     print("\n--- Loading Player Box Scores (Extended) ---")
     db = SessionLocal()
 
@@ -21,6 +21,8 @@ def load_player_box_scores_extended():
     total = 0
     for chunk in pd.read_csv(os.path.join(DATA_DIR, "PlayerStatisticsExtended.csv"), chunksize=CHUNK_SIZE, low_memory=False):
         rows_to_update = []
+        if (recent_only):
+            chunk = chunk[chunk["gameDateTimeEst"] >= RECENT_DATA_CUTOFF]
 
         for _, row in chunk.iterrows():
             if pd.isna(row.get("personId")) or pd.isna(row.get("gameId")):

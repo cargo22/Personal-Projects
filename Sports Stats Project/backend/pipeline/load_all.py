@@ -17,15 +17,19 @@ from pipeline.load_team_box_scores import load_team_box_scores
 from pipeline.load_team_box_scores_extended import load_team_box_scores_extended
 from pipeline.load_awards import load_awards
 
-# run this code if this file is being executed
-if __name__ == "__main__":
+def load_all(recent_only=False):
     print("Starting full CSV load...")
     load_teams()
     load_games()
     load_players()
-    load_player_box_scores()
-    load_player_box_scores_extended()
+    load_player_box_scores(recent_only)
+    load_player_box_scores_extended(recent_only)
     load_team_box_scores()
     load_team_box_scores_extended()
     load_awards()
     print("\nDone.")
+
+
+# run this code if this file is being executed
+if __name__ == "__main__":
+    load_all()

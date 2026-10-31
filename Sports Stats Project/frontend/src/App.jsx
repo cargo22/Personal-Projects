@@ -13,6 +13,7 @@ import { useTheme } from "./hooks/useTheme"
 import { useTypingPlaceholder } from "./hooks/useTypingPlaceholder"
 import { askOracle } from "./api/oracle"
 
+
 function App() {
   const [mode, setMode] = useState("past")
   const [question, setQuestion] = useState("")
@@ -60,7 +61,7 @@ function App() {
 
   const subtitle =
     mode === "past" ? "Ask anything about NBA history" :
-    mode === "present" ? "2025-26 Season Stats Hub" :
+    mode === "present" ? "2026-27 Season Stats Hub" :
     "Ask for predictions and forecasts"
 
   // changing page depending on toggle (no search bar for present mode)

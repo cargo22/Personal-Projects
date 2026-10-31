@@ -6,10 +6,10 @@ import pandas as pd
 from sqlalchemy import text
 from db_connection import SessionLocal
 import db_tables
-from pipeline.utils import DATA_DIR, CHUNK_SIZE, pad_game_id
+from pipeline.utils import DATA_DIR, CHUNK_SIZE, pad_game_id, RECENT_DATA_CUTOFF
 
 # function to load individual player box scores
-def load_player_box_scores():
+def load_player_box_scores(recent_only=False):
     print("\n--- Loading Player Box Scores ---")
 
     # creating a live connection to PostgreSQL
@@ -24,7 +24,11 @@ def load_player_box_scores():
     total = 0
     # basic file covers full history since 1947 — extended stats are loaded separately
     for chunk in pd.read_csv(os.path.join(DATA_DIR, "PlayerStatistics.csv"), chunksize=CHUNK_SIZE, low_memory=False):
+
         rows_to_insert = []
+        
+        if (recent_only):
+            chunk = chunk[chunk["gameDate"] >= RECENT_DATA_CUTOFF]
 
         # iterating through every row in the current chunk
         for _, row in chunk.iterrows():

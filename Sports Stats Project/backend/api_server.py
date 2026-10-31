@@ -8,6 +8,9 @@ import db_tables
 from db_connection import engine
 from ai_query import run_oracle_query, summarize_results
 
+# calling the variable that denotes the current season (prevents magic numbers)
+from pipeline.utils import CURRENT_SEASON
+
 # creates all database tables on startup if they don't already exist
 db_tables.Base.metadata.create_all(bind=engine)
 
@@ -60,13 +63,13 @@ def get_leaders():
                     FROM player_box_scores pbs
                     JOIN players p ON p.id = pbs.player_id
                     JOIN games g   ON g.id = pbs.game_id
-                    WHERE g.season = '2025-26' AND g.is_playoffs = :playoffs
+                    WHERE g.season = :season AND g.is_playoffs = :playoffs
                       AND g.nba_game_id NOT LIKE '0062%'
                     GROUP BY p.name
                     HAVING COUNT(*) >= :min_games
                     ORDER BY ppg DESC
                     LIMIT 10
-                """), {"playoffs": is_playoffs, "min_games": min_games}).fetchall()
+                """), {"season": CURRENT_SEASON, "playoffs": is_playoffs, "min_games": min_games}).fetchall()
                 return [{"name": r[0], "ppg": float(r[1]), "rpg": float(r[2]),
                          "apg": float(r[3]), "gp": r[4]} for r in rows]
 
@@ -88,13 +91,13 @@ def get_leaders():
                         ) AS win_pct
                     FROM teams t
                     JOIN games g ON (g.home_team_id = t.id OR g.away_team_id = t.id)
-                    WHERE g.season = '2025-26' AND g.is_playoffs = :playoffs
+                    WHERE g.season = :season AND g.is_playoffs = :playoffs
                       AND g.home_score IS NOT NULL
                       AND g.nba_game_id NOT LIKE '0062%'
                     GROUP BY t.name
                     ORDER BY wins DESC
                     LIMIT 10
-                """), {"playoffs": is_playoffs}).fetchall()
+                """), {"season": CURRENT_SEASON, "playoffs": is_playoffs}).fetchall()
                 return [{"name": r[0], "wins": r[1], "losses": r[2],
                          "win_pct": float(r[3]) if r[3] else 0.0} for r in rows]
 
@@ -111,28 +114,41 @@ def get_leaders():
                     FROM team_box_scores tbs
                     JOIN teams t ON t.id = tbs.team_id
                     JOIN games g  ON g.id = tbs.game_id
-                    WHERE g.season = '2025-26' AND g.is_playoffs = :playoffs
+                    WHERE g.season = :season AND g.is_playoffs = :playoffs
                       AND tbs.offensive_rating IS NOT NULL
                       AND g.nba_game_id NOT LIKE '0062%'
                     GROUP BY t.name
                     HAVING COUNT(*) >= :min_games
                     ORDER BY ppg DESC
                     LIMIT 10
-                """), {"playoffs": is_playoffs, "min_games": min_games}).fetchall()
+                """), {"season": CURRENT_SEASON, "playoffs": is_playoffs, "min_games": min_games}).fetchall()
                 return [{"name": r[0], "ppg": float(r[1]), "ortg": float(r[2]),
                          "drtg": float(r[3]), "pace": float(r[4]), "gp": r[5]} for r in rows]
+
+            # finding the most games any team has played this season, so the player
+            # leaderboard's min-games filter can adapt early in the season instead of
+            # staying empty until everyone crosses a flat 20-game threshold
+            max_games_played = conn.execute(text("""
+                SELECT MAX(gp) FROM (
+                    SELECT COUNT(*) AS gp
+                    FROM teams t
+                    JOIN games g ON (g.home_team_id = t.id OR g.away_team_id = t.id)
+                    WHERE g.season = :season AND g.is_playoffs = false
+                    GROUP BY t.id
+                ) sub
+            """), {"season": CURRENT_SEASON}).scalar()
 
             # defining what we return depending on whether we display regular season or playoff stats
             return {
                 "regular": {
-                    "players":     fetch_players(False, 20),
+                    "players":     fetch_players(False, min(20, int(max_games_played * 0.7))),
                     "teams_record": fetch_team_record(False),
-                    "teams_stats":  fetch_team_stats(False, 20),
+                    "teams_stats":  fetch_team_stats(False, min(20, int(max_games_played * 0.7))),
                 },
                 "playoffs": {
                     "players":     fetch_players(True, 5),
                     "teams_record": fetch_team_record(True),
-                    "teams_stats":  fetch_team_stats(True, 5),
+                    "teams_stats":  fetch_team_stats(True, min(20, int(max_games_played * 0.7))),
                 }
             }
     except Exception as e:

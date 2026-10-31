@@ -6,3 +6,4 @@ requests
 nba_api
 anthropic
 python-dotenv
+kaggle

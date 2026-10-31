@@ -149,7 +149,7 @@ export default function LeadersDashboard() {
 
   return (
     <div className="leaders-dashboard">
-      <p className="leaders-season">2025-26 Season Leaders</p>
+      <p className="leaders-season">2026-27 Season Leaders</p>
       <div className="leaders-tabs">
         <button
           className={tab === "regular" ? "active" : ""}
