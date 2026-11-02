@@ -16,6 +16,9 @@ def load_players():
     # reading the csv of all players in NBA's history
     df = pd.read_csv(os.path.join(DATA_DIR, "Players.csv"))
 
+    df["has_draft_info"] = df["draftYear"].notna()
+    df = df.sort_values("has_draft_info", ascending=False).drop_duplicates(subset=["firstName", "lastName"], keep="first")
+
     seeded = 0
 
     # iterating through each row (player)

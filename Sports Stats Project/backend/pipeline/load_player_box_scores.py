@@ -28,7 +28,7 @@ def load_player_box_scores(recent_only=False):
         rows_to_insert = []
         
         if (recent_only):
-            chunk = chunk[chunk["gameDate"] >= RECENT_DATA_CUTOFF]
+            chunk = chunk[chunk["gameDateTimeEst"].notna() & (chunk["gameDateTimeEst"] >= RECENT_DATA_CUTOFF)]
 
         # iterating through every row in the current chunk
         for _, row in chunk.iterrows():

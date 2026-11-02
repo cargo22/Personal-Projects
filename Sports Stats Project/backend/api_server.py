@@ -52,8 +52,8 @@ def get_leaders():
     try:
         with engine.connect() as conn:
             # function that returns top 10 players, sorting by ppg and displaying ppg, rpg, and apg
-            def fetch_players(is_playoffs, min_games):
-                rows = conn.execute(text("""
+            def fetch_players(is_playoffs, min_games, sort_column):
+                rows = conn.execute(text(f"""
                     SELECT
                         p.name,
                         ROUND(AVG(pbs.points)::numeric, 1)   AS ppg,
@@ -67,7 +67,7 @@ def get_leaders():
                       AND g.nba_game_id NOT LIKE '0062%'
                     GROUP BY p.name
                     HAVING COUNT(*) >= :min_games
-                    ORDER BY ppg DESC
+                    ORDER BY {sort_column} DESC
                     LIMIT 10
                 """), {"season": CURRENT_SEASON, "playoffs": is_playoffs, "min_games": min_games}).fetchall()
                 return [{"name": r[0], "ppg": float(r[1]), "rpg": float(r[2]),
@@ -102,8 +102,8 @@ def get_leaders():
                          "win_pct": float(r[3]) if r[3] else 0.0} for r in rows]
 
             # fetching more team stats
-            def fetch_team_stats(is_playoffs, min_games):
-                rows = conn.execute(text("""
+            def fetch_team_stats(is_playoffs, min_games, sort_column, direction):
+                rows = conn.execute(text(f"""
                     SELECT
                         t.name,
                         ROUND(AVG(tbs.points)::numeric, 1)            AS ppg,
@@ -119,7 +119,7 @@ def get_leaders():
                       AND g.nba_game_id NOT LIKE '0062%'
                     GROUP BY t.name
                     HAVING COUNT(*) >= :min_games
-                    ORDER BY ppg DESC
+                    ORDER BY {sort_column} {direction}
                     LIMIT 10
                 """), {"season": CURRENT_SEASON, "playoffs": is_playoffs, "min_games": min_games}).fetchall()
                 return [{"name": r[0], "ppg": float(r[1]), "ortg": float(r[2]),
@@ -138,17 +138,29 @@ def get_leaders():
                 ) sub
             """), {"season": CURRENT_SEASON}).scalar()
 
+            min_games = min(20, int(max_games_played * 0.7))
+
             # defining what we return depending on whether we display regular season or playoff stats
             return {
                 "regular": {
-                    "players":     fetch_players(False, min(20, int(max_games_played * 0.7))),
+                    "players_by_points": fetch_players(False, min_games, "ppg"),
+                    "players_by_rebounds": fetch_players(False, min_games, "rpg"),
+                    "players_by_assists": fetch_players(False, min_games, "apg"),
                     "teams_record": fetch_team_record(False),
-                    "teams_stats":  fetch_team_stats(False, min(20, int(max_games_played * 0.7))),
+                    "teams_by_points":  fetch_team_stats(False, min_games, "ppg", "DESC"),
+                    "teams_by_ortg":    fetch_team_stats(False, min_games, "ortg", "DESC"),
+                    "teams_by_drtg":    fetch_team_stats(False, min_games, "drtg", "ASC"),
+                    "teams_by_pace":    fetch_team_stats(False, min_games, "pace", "DESC")
                 },
                 "playoffs": {
-                    "players":     fetch_players(True, 5),
+                    "players_by_points": fetch_players(True, 5, "ppg"),
+                    "players_by_rebounds": fetch_players(True, 5, "rpg"),
+                    "players_by_assists": fetch_players(True, 5, "apg"),
                     "teams_record": fetch_team_record(True),
-                    "teams_stats":  fetch_team_stats(True, min(20, int(max_games_played * 0.7))),
+                    "teams_by_points":  fetch_team_stats(True, 5, "ppg", "DESC"),
+                    "teams_by_ortg":    fetch_team_stats(True, 5, "ortg", "DESC"),
+                    "teams_by_drtg":    fetch_team_stats(True, 5, "drtg", "ASC"),
+                    "teams_by_pace":    fetch_team_stats(True, 5, "pace", "DESC")      
                 }
             }
     except Exception as e:

@@ -22,7 +22,7 @@ def load_player_box_scores_extended(recent_only=False):
     for chunk in pd.read_csv(os.path.join(DATA_DIR, "PlayerStatisticsExtended.csv"), chunksize=CHUNK_SIZE, low_memory=False):
         rows_to_update = []
         if (recent_only):
-            chunk = chunk[chunk["gameDateTimeEst"] >= RECENT_DATA_CUTOFF]
+            chunk = chunk[chunk["gameDateTimeEst"].notna() & (chunk["gameDateTimeEst"] >= RECENT_DATA_CUTOFF)]
 
         for _, row in chunk.iterrows():
             if pd.isna(row.get("personId")) or pd.isna(row.get("gameId")):

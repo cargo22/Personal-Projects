@@ -5,6 +5,7 @@ import time
 from sqlalchemy import create_engine, text
 import anthropic
 from dotenv import load_dotenv
+from datetime import date
 
 from pipeline.utils import CURRENT_SEASON
 
@@ -24,7 +25,7 @@ client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 SCHEMA_CONTEXT = f"""You are an expert NBA Data Analyst. You have a PostgreSQL database with these tables:
 
 - teams (id, name, abbreviation, nickname, city, conference, division)
-- players (id, name, position, is_active, team_id, draft_year, draft_round, draft_number) — draft columns are NULL for undrafted players
+- players (id, name, position, is_active, team_id, draft_year, draft_round, draft_number) — draft columns are NULL for undrafted players. WARNING: players.team_id is NOT reliable for a player's current team — it is often NULL or stale. NEVER use it to answer "roster" or "current team" questions.
 - games (id, date, season, home_team_id, away_team_id, home_score, away_score, is_playoffs)
 - player_box_scores (id, player_id, game_id, team_id, points, rebounds, assists, steals, blocks, turnovers, minutes_played, fgm, fga, fg3m, fg3a, ftm, fta, plus_minus, true_shooting_pct, effective_fg_pct, usage_rate, offensive_rating, defensive_rating, net_rating, assist_pct, rebound_pct, player_impact_estimate, double_double, triple_double)
 - team_box_scores (id, team_id, game_id, points, assists, rebounds, turnovers, fgm, fga, fg3m, fg3a, ftm, fta, offensive_rating, defensive_rating, pace)
@@ -50,16 +51,22 @@ Rules:
 - To find a championship winner for a season, find the last playoff game of that season (MAX(date) WHERE is_playoffs = true AND season = '...' AND nba_game_id NOT LIKE '0062%') and determine who won it (home_score > away_score means home team won).
 - To find the in-season tournament (NBA Cup) winner for a season, find the game WHERE nba_game_id LIKE '0062%' AND season = '...', then determine who won it (home_score > away_score means home team won). Join with teams to get the team name.
 - To count championships for a team across all seasons, use a subquery or CTE that finds the winner of the last playoff game for each season, then count how many times that team appears.
-- Always round floating point results to 2 decimal places using ROUND(value::numeric, 2)."""
+- Always round floating point results to 2 decimal places using ROUND(value::numeric, 2).
+- To determine a player's CURRENT team (for "roster" questions like "who plays for the Lakers" or "what team is X on"), use their most recent player_box_scores.team_id, found via this exact pattern (do not use players.team_id):
+  SELECT DISTINCT ON (pbs.player_id) pbs.player_id, pbs.team_id
+  FROM player_box_scores pbs
+  JOIN games g ON g.id = pbs.game_id
+  ORDER BY pbs.player_id, g.date DESC
+  Join this as a subquery against players/teams to filter by team name."""
 
 # the output is list[dict] as the flow is:
 # PostgreSQL row -> Python dict -> JSON -> React
 def run_oracle_query(user_question: str, mode: str = "past") -> list[dict]:
     # expects a string (the user's question), returns a list of dictionaries (the results)
 
-    # in Present mode, force all queries to the current season unless the user says otherwise
-    if mode == "present":
-        user_question = f"[Current season {CURRENT_SEASON} — always filter to this season unless the user specifies a different one] {user_question}"
+    today = date.today()
+    user_question = f"[Current season {CURRENT_SEASON} and today's date is {today} — always filter to this season unless the user specifies a different one] {user_question}"
+
 
     # step 1 — send the question to Claude with the schema context
     # retries up to 3 times with a short wait between attempts to handle API timeouts

@@ -20,10 +20,15 @@ const TEAM_VIEW_OPTIONS = [
   { key: "pace",  label: "Pace" },
 ]
 
-function PlayerTable({ players }) {
+function PlayerTable({ playersByPoints, playersByRebounds, playersByAssists }) {
   const [sortBy, setSortBy] = useState("ppg")
 
-  const sorted = [...players].sort((a, b) => b[sortBy] - a[sortBy])
+  const listsByStat = {
+    ppg: playersByPoints,
+    rpg: playersByRebounds,
+    apg: playersByAssists,
+  }
+  const sorted = listsByStat[sortBy]
 
   return (
     <div className="leaders-card">
@@ -63,16 +68,18 @@ function PlayerTable({ players }) {
   )
 }
 
-function TeamTable({ teamsRecord, teamsStats }) {
+function TeamTable({ teamsRecord, teamsByPoints, teamsByOrtg, teamsByDrtg, teamsByPace }) {
   const [view, setView] = useState("record")
 
   const isRecord = view === "record"
 
-  const data = isRecord
-    ? teamsRecord
-    : [...teamsStats].sort((a, b) =>
-        view === "drtg" ? a[view] - b[view] : b[view] - a[view]
-      )
+  const listsByView = {
+    ppg: teamsByPoints,
+    ortg: teamsByOrtg,
+    drtg: teamsByDrtg,
+    pace: teamsByPace,
+  }
+  const data = isRecord ? teamsRecord : listsByView[view]
 
   const viewLabel = TEAM_VIEW_OPTIONS.find(o => o.key === view)?.label
 
@@ -165,8 +172,18 @@ export default function LeadersDashboard() {
         </button>
       </div>
       <div className="leaders-grid">
-        <PlayerTable players={section.players} />
-        <TeamTable teamsRecord={section.teams_record} teamsStats={section.teams_stats} />
+        <PlayerTable
+          playersByPoints={section.players_by_points}
+          playersByRebounds={section.players_by_rebounds}
+          playersByAssists={section.players_by_assists}
+        />
+        <TeamTable
+          teamsRecord={section.teams_record}
+          teamsByPoints={section.teams_by_points}
+          teamsByOrtg={section.teams_by_ortg}
+          teamsByDrtg={section.teams_by_drtg}
+          teamsByPace={section.teams_by_pace}
+        />
       </div>
     </div>
   )
