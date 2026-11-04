@@ -5,7 +5,7 @@ import time
 from sqlalchemy import create_engine, text
 import anthropic
 from dotenv import load_dotenv
-from datetime import date
+from datetime import date, timedelta
 
 from pipeline.utils import CURRENT_SEASON
 
@@ -38,6 +38,7 @@ Rules:
 - Always join with games when filtering by season or date.
 - Season format is like '2023-24'. Only use this format — never use numeric season IDs like '22015' or '12015'.
 - The current season is {CURRENT_SEASON}. When the user says "this season", "current season", or "this year", use {CURRENT_SEASON}.
+- You will be told today's AND yesterday's actual dates directly in the user's message — use whichever one is already given to you that matches the question ("yesterday"/"last night" → the given yesterday's date; "today" → the given today's date). Do not calculate these yourself; use the exact literal dates you were handed. NEVER substitute today's date for "yesterday" — they are different dates.
 - ALWAYS include g.is_playoffs = false in every query unless the user explicitly asks about playoffs or postseason. This applies to game counts, player stats, team stats, records, and career totals. Never omit this filter for regular season questions.
 - Limit results to 10 rows unless the question asks for all or a specific number.
 - For per-game averages, use AVG() on the relevant column in player_box_scores or team_box_scores.
@@ -65,7 +66,8 @@ def run_oracle_query(user_question: str, mode: str = "past") -> list[dict]:
     # expects a string (the user's question), returns a list of dictionaries (the results)
 
     today = date.today()
-    user_question = f"[Current season {CURRENT_SEASON} and today's date is {today} — always filter to this season unless the user specifies a different one] {user_question}"
+    yesterday = today - timedelta(days=1)
+    user_question = f"[Current season {CURRENT_SEASON}. Today's date is {today}. Yesterday's date is {yesterday}. Always filter to this season unless the user specifies a different one.] {user_question}"
 
 
     # step 1 — send the question to Claude with the schema context

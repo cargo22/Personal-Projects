@@ -2,7 +2,7 @@
 # each class = one table, each attribute = one column
 # all classes inherit from Base so SQLAlchemy knows to treat them as tables
 
-from sqlalchemy import Column, Integer, String, Float, Date, Boolean, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Float, Date, DateTime, Boolean, ForeignKey, UniqueConstraint, text
 from sqlalchemy.orm import relationship
 from db_connection import Base
 
@@ -47,6 +47,7 @@ class Player(Base):
     greatest_75_flag = Column(Boolean, default=False)          # true if named one of NBA's 75 greatest players
     is_active = Column(Boolean, default=True)
     team_id = Column(Integer, ForeignKey("teams.id"), nullable=True)  # pointer to the teams table
+    created_at = Column(DateTime(timezone=True), server_default=text("now()"))  # when this row was inserted — set by Postgres, not application code
 
     team = relationship("Team", back_populates="players")
     box_scores = relationship("PlayerBoxScore", back_populates="player")
@@ -63,6 +64,7 @@ class Game(Base):
     away_score = Column(Integer)
     season = Column(String, index=True)                        # format: "2023-24"
     is_playoffs = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=text("now()"))  # when this row was inserted — set by Postgres, not application code
 
     # two foreign keys pointing to the same table (teams) so we must specify which is which
     home_team = relationship("Team", foreign_keys=[home_team_id], back_populates="home_games")
@@ -109,6 +111,7 @@ class PlayerBoxScore(Base):
     player_impact_estimate = Column(Float)
     double_double = Column(Boolean, nullable=True)
     triple_double = Column(Boolean, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=text("now()"))  # when this row was inserted — set by Postgres, not application code
 
     __table_args__ = (UniqueConstraint("player_id", "game_id", name="uq_player_game"),)
 
@@ -147,6 +150,7 @@ class TeamBoxScore(Base):
     largest_lead = Column(Integer, nullable=True)
     lead_changes = Column(Integer, nullable=True)
     times_tied = Column(Integer, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=text("now()"))  # when this row was inserted — set by Postgres, not application code
 
     __table_args__ = (UniqueConstraint("team_id", "game_id", name="uq_team_game"),)
 
