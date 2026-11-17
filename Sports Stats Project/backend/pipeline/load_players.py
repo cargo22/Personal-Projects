@@ -7,6 +7,54 @@ from db_connection import SessionLocal
 import db_tables
 from pipeline.utils import DATA_DIR
 
+# some names in Players.csv belong to TWO (or more) different real people — most often
+# father/son pairs (e.g. Mike Dunleavy Sr./Jr.) — not duplicate records of the same person.
+# "has real draft info" can't tell these apart (both are real draft picks), so instead we
+# check whether their actual playing careers overlap in time: same person's duplicate
+# records happen in the same era (overlapping dates), while two different people's careers
+# don't overlap (a multi-year gap between one retiring and the other debuting).
+def deduplicate_players(df):
+    df = df.copy()
+    df["full_name"] = df["firstName"].astype(str).str.strip() + " " + df["lastName"].astype(str).str.strip()
+    df["has_draft_info"] = df["draftYear"].notna()
+
+    # each personId's real game-date range, straight from the raw box score CSV —
+    # games/player_box_scores aren't loaded into the database yet at this point in the
+    # pipeline, so we can't query them; the source CSV is the only data available here
+    stats = pd.read_csv(os.path.join(DATA_DIR, "PlayerStatistics.csv"), usecols=["personId", "gameDate"])
+    stats["gameDate"] = pd.to_datetime(stats["gameDate"])
+    date_ranges = stats.groupby("personId")["gameDate"].agg(["min", "max"])
+
+    rows_to_keep = []
+    for _, group in df.groupby("full_name"):
+        if len(group) == 1:
+            rows_to_keep.append(group)
+            continue
+
+        # only candidates with recorded games can be compared for a date gap — anyone
+        # who never played has nothing to compare, and contributes no evidence either way
+        ranges = []
+        for _, candidate in group.iterrows():
+            pid = candidate["personId"]
+            if pid in date_ranges.index:
+                ranges.append((pid, date_ranges.loc[pid, "min"], date_ranges.loc[pid, "max"]))
+
+        ranges.sort(key=lambda r: r[1])
+        is_different_people = any(
+            (ranges[i + 1][1] - ranges[i][2]).days > 365 * 3
+            for i in range(len(ranges) - 1)
+        )
+
+        if is_different_people:
+            # genuinely different real people sharing a name — keep every one of them
+            rows_to_keep.append(group)
+        else:
+            # same real person (or no game data to compare at all) — keep just one record
+            best = group.sort_values("has_draft_info", ascending=False).iloc[[0]]
+            rows_to_keep.append(best)
+
+    return pd.concat(rows_to_keep, ignore_index=True)
+
 # function to load players to the database
 def load_players():
     print("\n--- Loading Players ---")
@@ -15,9 +63,7 @@ def load_players():
 
     # reading the csv of all players in NBA's history
     df = pd.read_csv(os.path.join(DATA_DIR, "Players.csv"))
-
-    df["has_draft_info"] = df["draftYear"].notna()
-    df = df.sort_values("has_draft_info", ascending=False).drop_duplicates(subset=["firstName", "lastName"], keep="first")
+    df = deduplicate_players(df)
 
     seeded = 0
 
