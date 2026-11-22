@@ -56,10 +56,11 @@ def build_training_dataset(start_season="2015-16", end_season="2025-26", limit=N
 
 
 if __name__ == "__main__":
-    # training split: 2015-16 through 2021-22 — see project design notes for
-    # why (validate on 2022-23, test on 2023-24/24-25/25-26, run separately later)
-    print("Building training dataset (2015-16 through 2021-22)...")
-    df = build_training_dataset(start_season="2015-16", end_season="2021-22", limit=500)
+    # full range in one pass: train 2015-16 through 2021-22, validate on 2022-23,
+    # test on 2023-24/24-25/25-26 — split by the "season" column later, not rebuilt
+    # separately per split (see project design notes)
+    print("Building training dataset (2015-16 through 2025-26)...")
+    df = build_training_dataset(start_season="2015-16", end_season="2025-26")
     out_path = os.path.join(os.path.dirname(__file__), "training_data.csv")
     df.to_csv(out_path, index=False)
     print(f"Done. {len(df)} rows saved to {out_path}")

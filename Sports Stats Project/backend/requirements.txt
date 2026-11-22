@@ -7,3 +7,6 @@ nba_api
 anthropic
 python-dotenv
 kaggle
+pandas
+numpy
+scikit-learn
