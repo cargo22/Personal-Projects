@@ -37,6 +37,7 @@ def build_training_dataset(start_season="2015-16", end_season="2025-26", limit=N
             home_away = get_home_away(conn, team_id, game_id)
             opp_def_rating = get_opponent_defensive_rating(conn, team_id, game_id, before_date=date)
             rest = get_days_rest(conn, player_id, before_date=date)
+            rolling_minutes = get_rolling_average(conn, player_id, before_date=date, stat_column="minutes_played")
 
             if rolling_avg is None:
                 continue
@@ -48,6 +49,7 @@ def build_training_dataset(start_season="2015-16", end_season="2025-26", limit=N
                 "days_rest": rest,
                 "season": season,
                 "points": points,
+                "rolling_minutes": rolling_minutes,
             })
     
     return pd.DataFrame(training_data)
@@ -57,7 +59,7 @@ if __name__ == "__main__":
     # training split: 2015-16 through 2021-22 — see project design notes for
     # why (validate on 2022-23, test on 2023-24/24-25/25-26, run separately later)
     print("Building training dataset (2015-16 through 2021-22)...")
-    df = build_training_dataset(start_season="2015-16", end_season="2021-22")
+    df = build_training_dataset(start_season="2015-16", end_season="2021-22", limit=500)
     out_path = os.path.join(os.path.dirname(__file__), "training_data.csv")
     df.to_csv(out_path, index=False)
     print(f"Done. {len(df)} rows saved to {out_path}")
