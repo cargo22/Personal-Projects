@@ -28,13 +28,18 @@ def fetch_kaggle_data():
     
     if (current_version == stored_value):
         print("Dataset is up to date!")
-    else:
-        kaggle.api.dataset_download_files(match.ref, path=DATA_DIR, unzip=True)
-        with open(tracker, "w") as f:
-            json.dump({"kaggle_version": current_version}, f)
-        return True
+        return None
 
-    return False
+    # download the new CSVs, but DON'T save the version yet —
+    # we only save it once the database load fully succeeds (see save_kaggle_version)
+    kaggle.api.dataset_download_files(match.ref, path=DATA_DIR, unzip=True)
+    return current_version
+
+# called only after load_all() finishes without crashing.
+# if the load crashes, this never runs, so the next run sees the old version and retries.
+def save_kaggle_version(version):
+    with open(tracker, "w") as f:
+        json.dump({"kaggle_version": version}, f)
 
 if __name__ == "__main__":
     fetch_kaggle_data()

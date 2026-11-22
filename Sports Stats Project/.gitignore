@@ -22,3 +22,6 @@ frontend/dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Per-machine state (each computer tracks its own Kaggle download)
+backend/kaggle_version.json

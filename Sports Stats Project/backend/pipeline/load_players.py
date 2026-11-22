@@ -16,8 +16,16 @@ def load_players():
     # reading the csv of all players in NBA's history
     df = pd.read_csv(os.path.join(DATA_DIR, "Players.csv"))
 
-    df["has_draft_info"] = df["draftYear"].notna()
-    df = df.sort_values("has_draft_info", ascending=False).drop_duplicates(subset=["firstName", "lastName"], keep="first")
+    # the CSV has "ghost" copies of some players (e.g. 3 Luka Doncic rows) from non-NBA games.
+    # the ghosts share the real player's name AND birthday, but have nbaFlag = 0.
+    # matching on birthday too keeps real namesakes apart (Patrick Ewing Sr. vs Jr.).
+    # sort so the real NBA row (nbaFlag = 1) comes first, then keep only that one.
+    has_birthday = df["birthDate"].notna()
+    with_bday = (df[has_birthday]
+                 .sort_values("nbaFlag", ascending=False)
+                 .drop_duplicates(subset=["firstName", "lastName", "birthDate"], keep="first"))
+    # rows with no birthday can't be safely matched, so leave them untouched
+    df = pd.concat([with_bday, df[~has_birthday]])
 
     seeded = 0
 
