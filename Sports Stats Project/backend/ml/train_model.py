@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error
 
 data_path = os.path.join(os.path.dirname(__file__), "training_data.csv")
@@ -35,10 +35,10 @@ print("train rows:", len(X_train))
 print("val rows:  ", len(X_val))
 print("test rows: ", len(X_test))
 
-model = LinearRegression()
+model = RandomForestRegressor(n_estimators=100, random_state=42, max_depth=10, min_samples_leaf=50)
 model.fit(X_train, y_train)
 
-for feature, weight in zip(X.columns, model.coef_):
+for feature, weight in zip(X.columns, model.feature_importances_):
     print(f"{feature}: {weight:.3f}")
 
 val_predictions = model.predict(X_val)
